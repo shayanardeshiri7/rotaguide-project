@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>RotaGuide — Injection Site Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F5F2;
+    --surface: #FFFFFF;
+    --surface-alt: #EDE9E3;
+    --text: #1A1A1A;
+    --text-muted: #6B6560;
+    --accent: #2D7A5F;
+    --accent-light: #E8F5EE;
+    --accent-dark: #1E5A43;
+    --warn: #C75B39;
+    --warn-light: #FFF0EB;
+    --zone-1: #2D7A5F;
+    --zone-2: #3B8DB5;
+    --zone-3: #7B5EA7;
+    --zone-4: #C75B39;
+    --zone-5: #D4973B;
+    --zone-6: #5B8C3E;
+    --zone-7: #B55B7A;
+    --zone-8: #4A7A8C;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    --shadow-lg: 0 4px 24px rgba(0,0,0,0.08);
+    --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 16px 100px;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 24px 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .header h1 span { color: var(--accent); }
+
+  /* ── Navigation Tabs ── */
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--surface-alt);
+    border-radius: var(--radius);
+    padding: 4px;
+    margin-bottom: 20px;
+  }
+  .nav-tab {
+    flex: 1;
+    padding: 10px 8px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .nav-tab.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow);
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  /* ── Dial Zone Selector ── */
+  .dial-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0 20px;
+  }
+  .dial-svg {
+    width: 280px;
+    height: 280px;
+    cursor: pointer;
+  }
+  .zone-sector {
+    transition: var(--transition);
+    cursor: pointer;
+  }
+  .zone-sector:hover { opacity: 0.85; }
+  .zone-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    fill: white;
+    pointer-events: none;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+  .zone-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    fill: rgba(255,255,255,0.75);
+    pointer-events: none;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+  .center-circle {
+    fill: var(--bg);
+    stroke: var(--surface-alt);
+    stroke-width: 2;
+  }
+  .center-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    fill: var(--text-muted);
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+  .recommended-ring {
+    fill: none;
+    stroke: var(--text);
+    stroke-width: 3;
+    stroke-dasharray: 4 3;
+    opacity: 0.7;
+    animation: pulse-ring 2s ease-in-out infinite;
+  }
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ── Body Region Toggle ── */
+  .region-selector {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .region-btn {
+    padding: 8px 14px;
+    border: 1.5px solid var(--surface-alt);
+    background: var(--surface);
+    border-radius: 20px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .region-btn.active {
+    border-color: var(--accent);
+    background: var(--accent-light);
+    color: var(--accent-dark);
+  }
+
+  /* ── Log Button ── */
+  .log-btn {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    background: var(--accent);
+    color: white;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 8px;
+  }
+  .log-btn:hover { background: var(--accent-dark); }
+  .log-btn:disabled {
+    background: var(--surface-alt);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  /* ── Stats Row ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px 12px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+
+  /* ── Injection Log List ── */
+  .log-list { list-style: none; }
+  .log-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--surface-alt);
+  }
+  .log-item:last-child { border-bottom: none; }
+  .log-zone-dot {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .log-info { flex: 1; }
+  .log-region {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .log-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .log-delete {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 6px;
+    font-size: 18px;
+    opacity: 0.5;
+    transition: var(--transition);
+  }
+  .log-delete:hover { opacity: 1; color: var(--warn); }
+
+  /* ── Rotation Heatmap ── */
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30px, 1fr));
+    gap: 4px;
+    margin-top: 8px;
+  }
+  .heatmap-cell {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    transition: var(--transition);
+  }
+  .heatmap-label {
+    font-size: 11px;
+    text-align: center;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  /* ── Streak / Adherence ── */
+  .adherence-bar-bg {
+    height: 10px;
+    background: var(--surface-alt);
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0 6px;
+  }
+  .adherence-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 5px;
+    transition: width 0.5s ease;
+  }
+  .adherence-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── Empty State ── */
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+  }
+  .empty-state svg { margin-bottom: 12px; opacity: 0.4; }
+  .empty-state p { font-size: 14px; line-height: 1.5; }
+
+  /* ── Settings ── */
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--surface-alt);
+  }
+  .setting-row:last-child { border-bottom: none; }
+  .setting-label { font-size: 14px; font-weight: 500; }
+  .setting-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .setting-select {
+    padding: 8px 12px;
+    border: 1.5px solid var(--surface-alt);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 13px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+  }
+  .danger-btn {
+    padding: 12px 20px;
+    border: 1.5px solid var(--warn);
+    background: var(--warn-light);
+    color: var(--warn);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+  }
+  .danger-btn:hover { background: var(--warn); color: white; }
+
+  /* ── Section hidden ── */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── Confirmation modal ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+  .modal-box {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 24px;
+    max-width: 320px;
+    width: 90%;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+  }
+  .modal-box h3 { font-size: 17px; margin-bottom: 8px; }
+  .modal-box p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
+  .modal-actions { display: flex; gap: 10px; }
+  .modal-actions button {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+  }
+  .modal-cancel { background: var(--surface-alt); color: var(--text); }
+  .modal-confirm { background: var(--accent); color: white; }
+
+  /* ── 7-day mini chart ── */
+  .mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 80px;
+    padding: 8px 0;
+  }
+  .mini-bar-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    justify-content: flex-end;
+  }
+  .mini-bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    background: var(--accent);
+    transition: height 0.3s ease;
+    min-height: 2px;
+  }
+  .mini-bar-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- Header -->
+  <div class="header">
+    <h1>Rota<span>Guide</span></h1>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); cursor:pointer" onclick="showSection('settings')">
+      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.32 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  </div>
+
+  <!-- Nav Tabs -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('log')">Log</button>
+    <button class="nav-tab" onclick="showSection('history')">History</button>
+    <button class="nav-tab" onclick="showSection('insights')">Insights</button>
+  </div>
+
+  <!-- ═══════ LOG SECTION ═══════ -->
+  <div class="section active" id="section-log">
+    <div class="card">
+      <div class="card-title">Body Region</div>
+      <div class="region-selector" id="regionSelector"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Select Zone — Tap to log</div>
+      <div class="dial-container">
+        <svg class="dial-svg" id="dialSVG" viewBox="0 0 280 280"></svg>
+      </div>
+      <div id="zoneHint" style="text-align:center; font-size:13px; color:var(--text-muted); margin-top:-10px; margin-bottom:10px;"></div>
+      <button class="log-btn" id="logBtn" disabled onclick="logInjection()">Select a zone to log</button>
+    </div>
+  </div>
+
+  <!-- ═══════ HISTORY SECTION ═══════ -->
+  <div class="section" id="section-history">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-label">Total Logs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statStreak">0</div>
+        <div class="stat-label">Day Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="statAdherence">—</div>
+        <div class="stat-label">Adherence</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Recent Injections</div>
+      <ul class="log-list" id="logList"></ul>
+      <div class="empty-state" id="emptyHistory" style="display:none;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        <p>No injections logged yet.<br>Start by selecting a zone in the Log tab.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ INSIGHTS SECTION ═══════ -->
+  <div class="section" id="section-insights">
+    <div class="card">
+      <div class="card-title">Zone Usage — Last 7 Days</div>
+      <div class="heatmap-grid" id="heatmapGrid"></div>
+      <div class="heatmap-grid" id="heatmapLabels" style="margin-top:0;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Injections Per Day — Last 7 Days</div>
+      <div class="mini-chart" id="miniChart"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Rotation Adherence</div>
+      <div class="adherence-bar-bg">
+        <div class="adherence-bar-fill" id="adherenceBar" style="width:0%"></div>
+      </div>
+      <div class="adherence-text">
+        <span id="adherenceLabel">No data yet</span>
+        <span id="adherencePercent"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Repeat-Site Alerts</div>
+      <div id="alertsContainer">
+        <div class="empty-state">
+          <p>Alerts will appear when the same zone is used too frequently.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ SETTINGS SECTION ═══════ -->
+  <div class="section" id="section-settings">
+    <div class="card">
+      <div class="card-title">Settings</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Number of Zones</div>
+          <div class="setting-desc">Zones per body region on the dial</div>
+        </div>
+        <select class="setting-select" id="zoneCountSelect" onchange="updateZoneCount(this.value)">
+          <option value="6">6 zones</option>
+          <option value="8">8 zones</option>
+          <option value="10">10 zones</option>
+          <option value="12" selected>12 zones</option>
+        </select>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Repeat Warning Threshold</div>
+          <div class="setting-desc">Warn when zone is re-used within X injections</div>
+        </div>
+        <select class="setting-select" id="thresholdSelect" onchange="updateThreshold(this.value)">
+          <option value="3">3 injections</option>
+          <option value="5" selected>5 injections</option>
+          <option value="8">8 injections</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Data</div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Export Log</div>
+          <div class="setting-desc">Download injection history as CSV</div>
+        </div>
+        <button class="region-btn" onclick="exportCSV()" style="margin:0;">Export</button>
+      </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Clear All Data</div>
+          <div class="setting-desc">Permanently erase all logged injections</div>
+        </div>
+        <button class="danger-btn" onclick="showClearModal()">Clear</button>
+      </div>
+    </div>
+    <div style="text-align:center; padding:20px;">
+      <button class="region-btn" onclick="showSection('log')" style="margin:0;">← Back to Log</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Clear Confirmation Modal -->
+<div class="modal-overlay" id="clearModal">
+  <div class="modal-box">
+    <h3>Clear All Data?</h3>
+    <p>This will permanently delete all your injection logs. This action cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="hideClearModal()">Cancel</button>
+      <button class="modal-confirm" onclick="clearAllData()" style="background:var(--warn)">Clear Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- Log Confirmation Modal -->
+<div class="modal-overlay" id="logModal">
+  <div class="modal-box">
+    <h3 id="logModalTitle">Log Injection?</h3>
+    <p id="logModalDesc"></p>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="hideLogModal()">Cancel</button>
+      <button class="modal-confirm" onclick="confirmLog()">Log It</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════ STATE ═══════
+const ZONE_COLORS = ['#2D7A5F','#3B8DB5','#7B5EA7','#C75B39','#D4973B','#5B8C3E','#B55B7A','#4A7A8C','#6B8E6B','#8B6B4E','#5A6ABF','#BF5A8A'];
+const REGIONS = [
+  { id: 'abdomen-L', label: 'Abdomen L' },
+  { id: 'abdomen-R', label: 'Abdomen R' },
+  { id: 'thigh-L', label: 'Thigh L' },
+  { id: 'thigh-R', label: 'Thigh R' },
+  { id: 'arm-L', label: 'Arm L' },
+  { id: 'arm-R', label: 'Arm R' },
+];
+
+let state = {
+  zoneCount: 12,
+  threshold: 5,
+  selectedRegion: 'abdomen-L',
+  selectedZone: null,
+  logs: [], // { id, region, zone, timestamp }
+};
+
+// ═══════ PERSISTENCE (localStorage with fallback) ═══════
+function saveState() {
+  try {
+    const data = { zoneCount: state.zoneCount, threshold: state.threshold, logs: state.logs };
+    localStorage.setItem('rotaguide_v2', JSON.stringify(data));
+  } catch(e) { /* silent fail for environments without localStorage */ }
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('rotaguide_v2');
+    if (raw) {
+      const data = JSON.parse(raw);
+      state.zoneCount = data.zoneCount || 12;
+      state.threshold = data.threshold || 5;
+      state.logs = data.logs || [];
+    }
+    // Migrate old data if present
+    const old = localStorage.getItem('rotaguide_data');
+    if (old && !raw) {
+      const data = JSON.parse(old);
+      state.logs = data.logs || [];
+      state.zoneCount = 12; // force new default
+      localStorage.removeItem('rotaguide_data');
+      saveState();
+    }
+    document.getElementById('zoneCountSelect').value = state.zoneCount;
+    document.getElementById('thresholdSelect').value = state.threshold;
+  } catch(e) { /* silent fail */ }
+}
+
+// ═══════ NAVIGATION ═══════
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  const tabs = document.querySelectorAll('.nav-tab');
+  const tabMap = { log: 0, history: 1, insights: 2 };
+  if (tabMap[id] !== undefined) tabs[tabMap[id]].classList.add('active');
+  if (id === 'history') renderHistory();
+  if (id === 'insights') renderInsights();
+}
+
+// ═══════ REGION SELECTOR ═══════
+function renderRegions() {
+  const container = document.getElementById('regionSelector');
+  container.innerHTML = REGIONS.map(r =>
+    `<button class="region-btn ${r.id === state.selectedRegion ? 'active' : ''}" onclick="selectRegion('${r.id}')">${r.label}</button>`
+  ).join('');
+}
+
+function selectRegion(id) {
+  state.selectedRegion = id;
+  state.selectedZone = null;
+  renderRegions();
+  renderDial();
+  updateLogBtn();
+}
+
+// ═══════ DIAL RENDERER ═══════
+function renderDial() {
+  const svg = document.getElementById('dialSVG');
+  const cx = 140, cy = 140, R = 120, innerR = 45;
+  const n = state.zoneCount;
+  const angleStep = (2 * Math.PI) / n;
+
+  // Recent usage for this region
+  const regionLogs = state.logs.filter(l => l.region === state.selectedRegion);
+  const recentZones = regionLogs.slice(-state.threshold).map(l => l.zone);
+  const zoneCounts = {};
+  regionLogs.forEach(l => { zoneCounts[l.zone] = (zoneCounts[l.zone] || 0) + 1; });
+
+  // Find recommended zone (least recently used)
+  let recommendedZone = 0;
+  let oldestTime = Infinity;
+  for (let i = 0; i < n; i++) {
+    const lastUse = regionLogs.filter(l => l.zone === i);
+    if (lastUse.length === 0) { recommendedZone = i; break; }
+    const lastTs = new Date(lastUse[lastUse.length - 1].timestamp).getTime();
+    if (lastTs < oldestTime) { oldestTime = lastTs; recommendedZone = i; }
+  }
+
+  let html = '';
+
+  // Draw sectors
+  for (let i = 0; i < n; i++) {
+    const startAngle = i * angleStep - Math.PI / 2;
+    const endAngle = (i + 1) * angleStep - Math.PI / 2;
+
+    const x1 = cx + R * Math.cos(startAngle);
+    const y1 = cy + R * Math.sin(startAngle);
+    const x2 = cx + R * Math.cos(endAngle);
+    const y2 = cy + R * Math.sin(endAngle);
+    const ix1 = cx + innerR * Math.cos(startAngle);
+    const iy1 = cy + innerR * Math.sin(startAngle);
+    const ix2 = cx + innerR * Math.cos(endAngle);
+    const iy2 = cy + innerR * Math.sin(endAngle);
+
+    const largeArc = angleStep > Math.PI ? 1 : 0;
+
+    const path = `M ${ix1} ${iy1} L ${x1} ${y1} A ${R} ${R} 0 ${largeArc} 1 ${x2} ${y2} L ${ix2} ${iy2} A ${innerR} ${innerR} 0 ${largeArc} 0 ${ix1} ${iy1} Z`;
+
+    const isRecent = recentZones.includes(i);
+    const isSelected = state.selectedZone === i;
+    const color = ZONE_COLORS[i % ZONE_COLORS.length];
+    const opacity = isRecent ? 0.35 : (isSelected ? 1 : 0.8);
+    const strokeW = isSelected ? 3 : 0;
+
+    html += `<path class="zone-sector" d="${path}" fill="${color}" opacity="${opacity}" stroke="${isSelected ? '#1A1A1A' : 'none'}" stroke-width="${strokeW}" onclick="selectZone(${i})" />`;
+
+    // Labels
+    const midAngle = startAngle + angleStep / 2;
+    const labelR = (R + innerR) / 2;
+    const lx = cx + labelR * Math.cos(midAngle);
+    const ly = cy + labelR * Math.sin(midAngle);
+
+    html += `<text class="zone-label" x="${lx}" y="${ly - 6}" onclick="selectZone(${i})">Z${i + 1}</text>`;
+    const count = zoneCounts[i] || 0;
+    if (count > 0) {
+      html += `<text class="zone-number" x="${lx}" y="${ly + 8}" onclick="selectZone(${i})">${count}×</text>`;
+    }
+  }
+
+  // Recommended zone ring
+  const recStart = recommendedZone * angleStep - Math.PI / 2;
+  const recEnd = (recommendedZone + 1) * angleStep - Math.PI / 2;
+  const midR = (R + innerR) / 2;
+  const ringR = (R - innerR) / 2 - 2;
+  const ringCx = cx + midR * Math.cos(recStart + angleStep / 2);
+  const ringCy = cy + midR * Math.sin(recStart + angleStep / 2);
+  html += `<circle class="recommended-ring" cx="${ringCx}" cy="${ringCy}" r="${ringR}" />`;
+
+  // Center circle
+  html += `<circle class="center-circle" cx="${cx}" cy="${cy}" r="${innerR - 4}" />`;
+  const regionLabel = REGIONS.find(r => r.id === state.selectedRegion)?.label || '';
+  html += `<text class="center-text" x="${cx}" y="${cy}">${regionLabel}</text>`;
+
+  svg.innerHTML = html;
+
+  // Update hint
+  const hint = document.getElementById('zoneHint');
+  hint.textContent = `Recommended: Zone ${recommendedZone + 1} (dashed circle)`;
+}
+
+function selectZone(z) {
+  state.selectedZone = z;
+  renderDial();
+  updateLogBtn();
+}
+
+function updateLogBtn() {
+  const btn = document.getElementById('logBtn');
+  if (state.selectedZone === null) {
+    btn.disabled = true;
+    btn.textContent = 'Select a zone to log';
+  } else {
+    btn.disabled = false;
+    const regionLabel = REGIONS.find(r => r.id === state.selectedRegion)?.label;
+    btn.textContent = `Log → ${regionLabel}, Zone ${state.selectedZone + 1}`;
+  }
+}
+
+// ═══════ LOGGING ═══════
+function logInjection() {
+  // Check if this zone was recently used
+  const regionLogs = state.logs.filter(l => l.region === state.selectedRegion);
+  const recentZones = regionLogs.slice(-state.threshold).map(l => l.zone);
+
+  if (recentZones.includes(state.selectedZone)) {
+    const regionLabel = REGIONS.find(r => r.id === state.selectedRegion)?.label;
+    document.getElementById('logModalTitle').textContent = '⚠ Zone Recently Used';
+    document.getElementById('logModalDesc').textContent =
+      `Zone ${state.selectedZone + 1} on ${regionLabel} was used within your last ${state.threshold} injections. Repeated use increases lipohypertrophy risk. Log anyway?`;
+    document.getElementById('logModal').classList.add('show');
+    return;
+  }
+  confirmLog();
+}
+
+function confirmLog() {
+  hideLogModal();
+  const entry = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    region: state.selectedRegion,
+    zone: state.selectedZone,
+    timestamp: new Date().toISOString(),
+  };
+  state.logs.push(entry);
+  saveState();
+
+  state.selectedZone = null;
+  renderDial();
+  updateLogBtn();
+  showToast('Injection logged ✓');
+}
+
+function hideLogModal() { document.getElementById('logModal').classList.remove('show'); }
+
+function deleteLog(id) {
+  state.logs = state.logs.filter(l => l.id !== id);
+  saveState();
+  renderHistory();
+}
+
+// ═══════ HISTORY ═══════
+function renderHistory() {
+  const list = document.getElementById('logList');
+  const empty = document.getElementById('emptyHistory');
+  const sorted = [...state.logs].reverse();
+
+  document.getElementById('statTotal').textContent = state.logs.length;
+  document.getElementById('statStreak').textContent = calcStreak();
+
+  const adh = calcAdherence();
+  document.getElementById('statAdherence').textContent = adh !== null ? adh + '%' : '—';
+
+  if (sorted.length === 0) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  list.innerHTML = sorted.slice(0, 30).map(log => {
+    const region = REGIONS.find(r => r.id === log.region)?.label || log.region;
+    const color = ZONE_COLORS[log.zone % ZONE_COLORS.length];
+    const date = new Date(log.timestamp);
+    const timeStr = date.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) + ' · ' +
+                    date.toLocaleTimeString('en-CA', { hour: '2-digit', minute: '2-digit' });
+    return `<li class="log-item">
+      <div class="log-zone-dot" style="background:${color}">${log.zone + 1}</div>
+      <div class="log-info">
+        <div class="log-region">${region} — Zone ${log.zone + 1}</div>
+        <div class="log-time">${timeStr}</div>
+      </div>
+      <button class="log-delete" onclick="deleteLog('${log.id}')" title="Delete">×</button>
+    </li>`;
+  }).join('');
+}
+
+function calcStreak() {
+  if (state.logs.length === 0) return 0;
+  const days = new Set();
+  state.logs.forEach(l => {
+    days.add(new Date(l.timestamp).toISOString().slice(0, 10));
+  });
+  const sorted = [...days].sort().reverse();
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const ds = d.toISOString().slice(0, 10);
+    if (sorted.includes(ds)) { streak++; } else if (i > 0) break;
+  }
+  return streak;
+}
+
+function calcAdherence() {
+  if (state.logs.length < 2) return null;
+  let good = 0;
+  for (let i = 1; i < state.logs.length; i++) {
+    const prev = state.logs[i - 1];
+    const curr = state.logs[i];
+    // Adherent if different zone OR different region from previous
+    if (curr.region !== prev.region || curr.zone !== prev.zone) good++;
+  }
+  return Math.round((good / (state.logs.length - 1)) * 100);
+}
+
+// ═══════ INSIGHTS ═══════
+function renderInsights() {
+  renderHeatmap();
+  renderMiniChart();
+  renderAdherence();
+  renderAlerts();
+}
+
+function renderHeatmap() {
+  const grid = document.getElementById('heatmapGrid');
+  const labels = document.getElementById('heatmapLabels');
+  const n = state.zoneCount;
+  const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const recent = state.logs.filter(l => new Date(l.timestamp) >= sevenDaysAgo);
+
+  const counts = {};
+  for (let i = 0; i < n; i++) counts[i] = 0;
+  recent.forEach(l => { if (l.zone < n) counts[l.zone]++; });
+  const maxCount = Math.max(1, ...Object.values(counts));
+
+  grid.innerHTML = '';
+  labels.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    const count = counts[i];
+    const intensity = count / maxCount;
+    const color = ZONE_COLORS[i % ZONE_COLORS.length];
+    const alpha = 0.15 + intensity * 0.85;
+    grid.innerHTML += `<div class="heatmap-cell" style="background:${color}; opacity:${alpha}">${count}</div>`;
+    labels.innerHTML += `<div class="heatmap-label">Z${i + 1}</div>`;
+  }
+}
+
+function renderMiniChart() {
+  const container = document.getElementById('miniChart');
+  const days = [];
+  const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = d.toISOString().slice(0, 10);
+    const count = state.logs.filter(l => l.timestamp.slice(0, 10) === ds).length;
+    days.push({ label: dayNames[d.getDay()], count });
+  }
+  const maxC = Math.max(1, ...days.map(d => d.count));
+  container.innerHTML = days.map(d => {
+    const h = Math.max(2, (d.count / maxC) * 60);
+    return `<div class="mini-bar-group"><div class="mini-bar" style="height:${h}px"></div><div class="mini-bar-label">${d.label}</div></div>`;
+  }).join('');
+}
+
+function renderAdherence() {
+  const adh = calcAdherence();
+  const bar = document.getElementById('adherenceBar');
+  const label = document.getElementById('adherenceLabel');
+  const pct = document.getElementById('adherencePercent');
+  if (adh === null) {
+    bar.style.width = '0%';
+    label.textContent = 'Log at least 2 injections to see adherence';
+    pct.textContent = '';
+  } else {
+    bar.style.width = adh + '%';
+    bar.style.background = adh >= 80 ? 'var(--accent)' : adh >= 50 ? 'var(--zone-5)' : 'var(--warn)';
+    label.textContent = adh >= 80 ? 'Excellent rotation' : adh >= 50 ? 'Room for improvement' : 'Needs attention';
+    pct.textContent = adh + '%';
+  }
+}
+
+function renderAlerts() {
+  const container = document.getElementById('alertsContainer');
+  const alerts = [];
+
+  // Check for zones used more than twice in last N injections
+  const recent = state.logs.slice(-state.threshold * 2);
+  const zoneCounts = {};
+  recent.forEach(l => {
+    const key = l.region + '-' + l.zone;
+    zoneCounts[key] = (zoneCounts[key] || 0) + 1;
+  });
+
+  Object.entries(zoneCounts).forEach(([key, count]) => {
+    if (count >= 3) {
+      const [region, zone] = key.split('-');
+      const regionLabel = REGIONS.find(r => r.id === region)?.label || region;
+      alerts.push(`<div style="padding:10px 14px; background:var(--warn-light); border-radius:var(--radius-sm); margin-bottom:8px; font-size:13px; color:var(--warn);">
+        <strong>⚠ ${regionLabel} Zone ${parseInt(zone) + 1}</strong> — used ${count}× in your last ${recent.length} injections. Consider rotating to a different zone.
+      </div>`);
+    }
+  });
+
+  if (alerts.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:16px; font-size:13px; color:var(--accent);">✓ No repeat-site concerns detected.</div>`;
+  } else {
+    container.innerHTML = alerts.join('');
+  }
+}
+
+// ═══════ SETTINGS ═══════
+function updateZoneCount(val) {
+  state.zoneCount = parseInt(val);
+  state.selectedZone = null;
+  saveState();
+  renderDial();
+  updateLogBtn();
+}
+
+function updateThreshold(val) {
+  state.threshold = parseInt(val);
+  saveState();
+  renderDial();
+}
+
+function showClearModal() { document.getElementById('clearModal').classList.add('show'); }
+function hideClearModal() { document.getElementById('clearModal').classList.remove('show'); }
+
+function clearAllData() {
+  state.logs = [];
+  saveState();
+  hideClearModal();
+  showToast('All data cleared');
+  renderDial();
+  updateLogBtn();
+}
+
+function exportCSV() {
+  if (state.logs.length === 0) { showToast('No data to export'); return; }
+  let csv = 'Timestamp,Region,Zone\n';
+  state.logs.forEach(l => {
+    const region = REGIONS.find(r => r.id === l.region)?.label || l.region;
+    csv += `${l.timestamp},${region},${l.zone + 1}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'rotaguide_export_' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+  showToast('CSV exported ✓');
+}
+
+// ═══════ TOAST ═══════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ═══════ INIT ═══════
+loadState();
+renderRegions();
+renderDial();
+updateLogBtn();
+</script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+  "name": "rotaguide",
+  "version": "1.0.0",
+  "description": "Low-cost guided insulin injection-site rotation system to reduce lipohypertrophy risk",
+  "private": true,
+  "scripts": {
+    "dev": "open public/index.html",
+    "deploy": "firebase deploy",
+    "test": "echo 'No tests configured yet' && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "insulin",
+    "diabetes",
+    "injection-site-rotation",
+    "lipohypertrophy",
+    "biomedical-engineering",
+    "health-tracker"
+  ],
+  "authors": [
+    "Qummar Mahmood",
+    "Ramtin Chelongarian",
+    "Shayan Ardeshiri",
+    "Prabjot Sanghera",
+    "Ben Penny"
+  ]
+}
