@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     'RotaGuide is a local-first progressive web app for tracking insulin injection-site rotation. Works offline; data stays on your device.',
 };
 
-const APP_URL = 'https://app-rotaguide.vercel.app';
+const APP_URL = 'https://rotaguide-app.vercel.app';
 
 const FEATURES = [
   {
@@ -198,8 +198,8 @@ recommend  is order-independent           however entries are stored`}</pre>
           <div className="callout">
             <p className="callout__label">Judge for yourself</p>
             <p>
-              The original app is still deployed, unchanged, at <a href="/v1/index.html">/v1</a>.
-              Compare it against{' '}
+              The original app is still deployed, unchanged, at <a href="/v1/">/v1</a>. Compare it
+              against{' '}
               <a href={APP_URL} rel="noreferrer noopener">
                 the current build
               </a>{' '}

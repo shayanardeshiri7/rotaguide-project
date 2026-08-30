@@ -9,7 +9,7 @@ BMEN 668 capstone · University of Calgary · Feb–Apr 2026
 ![tests 159](https://img.shields.io/badge/tests-159-2D7A5F)
 ![licence MIT](https://img.shields.io/badge/licence-MIT-6B6560)
 
-[Live app](https://app-rotaguide.vercel.app) · [Project site](https://rotaguide.vercel.app) · [The original v1](https://rotaguide.vercel.app/v1/)
+[Live app](https://rotaguide-app.vercel.app) · [Project site](https://rotaguide.vercel.app) · [The original v1](https://rotaguide.vercel.app/v1/)
 
 > **Not a medical device.** This is a student engineering prototype from a university course. It has not been evaluated by any regulator and does not provide medical advice.
 

@@ -67,7 +67,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Link href="/app">The tracker</Link>
               {/* /v1 is a static file outside the Next router, so it
                   stays a plain anchor. */}
-              <a href="/v1/index.html">The original v1</a>
+              <a href="/v1/">The original v1</a>
             </div>
             <p>
               {PROJECT.course} · {PROJECT.institution} · {PROJECT.term}
