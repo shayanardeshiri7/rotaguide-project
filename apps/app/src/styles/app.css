@@ -483,12 +483,16 @@ body {
   border-bottom: none;
 }
 
+/* Both are spans inside a <label>; without this they run together on
+   one line ("Zones per regionMatch the guide you printed"). */
 .setting__label {
+  display: block;
   font-size: var(--rg-text-sm);
   font-weight: 600;
 }
 
 .setting__hint {
+  display: block;
   font-size: var(--rg-text-xs);
   color: var(--rg-text-muted);
   margin-top: 2px;

@@ -4,6 +4,11 @@
 
 BMEN 668 capstone · University of Calgary · Feb–Apr 2026
 
+[![CI](https://github.com/shayanardeshiri7/rotaguide-project/actions/workflows/ci.yml/badge.svg)](https://github.com/shayanardeshiri7/rotaguide-project/actions/workflows/ci.yml)
+![domain coverage 100%](https://img.shields.io/badge/domain%20coverage-100%25-2D7A5F)
+![tests 159](https://img.shields.io/badge/tests-159-2D7A5F)
+![licence MIT](https://img.shields.io/badge/licence-MIT-6B6560)
+
 [Live app](https://app-rotaguide.vercel.app) · [Project site](https://rotaguide.vercel.app) · [The original v1](https://rotaguide.vercel.app/v1/)
 
 > **Not a medical device.** This is a student engineering prototype from a university course. It has not been evaluated by any regulator and does not provide medical advice.
@@ -72,13 +77,18 @@ The part worth reading is `apps/app/src/domain`. It is framework-free by contrac
 ```bash
 pnpm install
 pnpm dev          # tracker on :5173, site on :3000
-pnpm test         # unit + component tests
+pnpm test         # 140 unit + component tests
 pnpm test:coverage
-pnpm e2e          # Playwright, includes axe accessibility checks
+pnpm e2e          # 19 Playwright tests, including axe accessibility checks
 pnpm build
 ```
 
 Requires Node ≥ 20.11 and pnpm.
+
+Optional cloud backup needs a Supabase project. Copy `apps/app/.env.example`
+to `apps/app/.env`, fill it in, and apply `supabase/migrations/`. Without
+those variables the feature is simply absent — the app is fully functional
+local-only, which is the intended default.
 
 ## Privacy
 
