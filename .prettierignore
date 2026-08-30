@@ -1,0 +1,9 @@
+legacy/
+node_modules/
+dist/
+.next/
+.turbo/
+coverage/
+pnpm-lock.yaml
+apps/web/public/v1/
+apps/web/out/

@@ -1,0 +1,132 @@
+/**
+ * RotaGuide design tokens — the single source of truth for both the
+ * marketing site (apps/web) and the tracker PWA (apps/app).
+ *
+ * Inherited from the v1 app so the two properties read as one product.
+ * Never hardcode a hex value in component logic; add a token here instead.
+ */
+
+:root {
+  /* ── Surface ── */
+  --rg-bg: #f7f5f2;
+  --rg-surface: #ffffff;
+  --rg-surface-alt: #ede9e3;
+  --rg-border: #e2ddd6;
+
+  /* ── Text ── */
+  --rg-text: #1a1a1a;
+  --rg-text-muted: #6b6560;
+
+  /* ── Accent (clinical green) ── */
+  /* --rg-accent is a *surface* colour: fills, borders, bars. It is not
+     safe as text on a dark background. */
+  --rg-accent: #2d7a5f;
+  --rg-accent-light: #e8f5ee;
+  --rg-accent-dark: #1e5a43;
+
+  /* Accent-coloured *text*. Kept separate because the fill and the
+     legible foreground have to move in opposite directions between
+     themes — reusing --rg-accent-dark here rendered dark-green on
+     dark-green at 1.48:1 in dark mode. Both values clear WCAG AA
+     (>=4.5:1) against --rg-bg, --rg-surface and --rg-accent-light. */
+  --rg-accent-text: #1e5a43;
+
+  /* ── Warning (burnt orange) ── */
+  --rg-warn: #c75b39;
+  --rg-warn-light: #fff0eb;
+
+  /* ── Caution (amber) — the middle repeat-risk state ── */
+  --rg-caution: #d4973b;
+  --rg-caution-light: #fdf3e3;
+
+  /* ── Zone palette — 12 hues, one per injection port ── */
+  --rg-zone-1: #2d7a5f;
+  --rg-zone-2: #3b8db5;
+  --rg-zone-3: #7b5ea7;
+  --rg-zone-4: #c75b39;
+  --rg-zone-5: #d4973b;
+  --rg-zone-6: #5b8c3e;
+  --rg-zone-7: #b55b7a;
+  --rg-zone-8: #4a7a8c;
+  --rg-zone-9: #6b8e6b;
+  --rg-zone-10: #8b6b4e;
+  --rg-zone-11: #5a6abf;
+  --rg-zone-12: #bf5a8a;
+
+  /* ── Type ── */
+  --rg-font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --rg-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* Minimum body size is 16px, not 14px: the spec calls for >=14pt legibility
+     for older adults, and 14pt ~= 18.7px. Body copy steps up accordingly. */
+  --rg-text-xs: 0.8125rem; /* 13px — metadata only, never body copy */
+  --rg-text-sm: 0.9375rem; /* 15px */
+  --rg-text-base: 1rem; /* 16px */
+  --rg-text-lg: 1.25rem; /* 20px */
+  --rg-text-xl: 1.5rem; /* 24px */
+  --rg-text-2xl: 2rem; /* 32px */
+  --rg-text-3xl: 2.75rem; /* 44px */
+  --rg-text-4xl: 4rem; /* 64px */
+
+  /* ── Space ── */
+  --rg-space-1: 0.25rem;
+  --rg-space-2: 0.5rem;
+  --rg-space-3: 0.75rem;
+  --rg-space-4: 1rem;
+  --rg-space-6: 1.5rem;
+  --rg-space-8: 2rem;
+  --rg-space-12: 3rem;
+  --rg-space-16: 4rem;
+  --rg-space-24: 6rem;
+
+  /* ── Shape ── */
+  --rg-radius: 14px;
+  --rg-radius-sm: 8px;
+  --rg-radius-lg: 24px;
+  --rg-radius-full: 9999px;
+
+  /* Target users include people with arthritis and reduced vision.
+     44px is the WCAG 2.2 AA minimum tap target — treat it as a floor. */
+  --rg-tap-min: 44px;
+
+  /* ── Elevation ── */
+  --rg-shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 4px 12px rgb(0 0 0 / 0.04);
+  --rg-shadow-lg: 0 4px 24px rgb(0 0 0 / 0.08);
+  --rg-shadow-xl: 0 12px 48px rgb(0 0 0 / 0.12);
+
+  /* ── Motion — slow and deliberate, never bouncy ── */
+  --rg-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --rg-transition: 0.2s var(--rg-ease);
+  --rg-transition-slow: 0.5s var(--rg-ease);
+}
+
+[data-theme='dark'] {
+  --rg-bg: #1a1a1a;
+  --rg-surface: #242424;
+  --rg-surface-alt: #2e2e2e;
+  --rg-border: #3a3a3a;
+  --rg-text: #f0ede8;
+  --rg-text-muted: #9b968f;
+  --rg-accent-light: #1a3d2e;
+  /* Lightened so accent text clears AA on the dark surfaces: 6.4:1 on
+     --rg-surface, 7.2:1 on --rg-bg, 5.0:1 on --rg-accent-light. */
+  --rg-accent-text: #5fb894;
+  --rg-warn-light: #3d1a10;
+  --rg-caution-light: #3d3016;
+  --rg-shadow: 0 1px 3px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.3);
+  --rg-shadow-lg: 0 4px 24px rgb(0 0 0 / 0.5);
+  --rg-shadow-xl: 0 12px 48px rgb(0 0 0 / 0.6);
+}
+
+/* Accessibility is a requirement here, not polish — respect the OS setting
+   everywhere rather than per-component. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

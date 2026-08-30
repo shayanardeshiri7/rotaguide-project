@@ -10,20 +10,20 @@
 
 ## Shopping List — Components to Buy
 
-| # | Item | Qty | Est. Cost (CAD) | Where to Buy | Notes |
-|---|------|-----|-----------------|-------------|-------|
-| 1 | Neodymium disc magnets (6mm × 2mm) | 1 pack (20+) | $17.99 | Amazon.ca | For detent indexing — creates the "click" between zones |
-| 2 | Silicone sheet (1–2mm thick, food/skin-safe) | 1 sheet | $15.00 | Amazon.ca | Skin-contact interface pad; cut to fit base of guide |
-| 3 | Small compression springs (6mm OD × 10mm) | 4–6 | $5.00 | McMaster-Carr / Amazon | For detent mechanism plunger (spring-loaded ball) |
-| 4 | Steel ball bearings (4mm or 5mm) | 6 | $3.00 | Amazon.ca / McMaster | Detent ball — sits in spring, clicks into magnet recesses |
-| 5 | M3 machine screws + nuts (assorted 8–16mm) | 1 pack | $5.00 | Amazon.ca / Home Depot | Central pivot assembly + securing layers |
-| 6 | M3 flat washers + nylon washers | 1 pack | $2.00 | Amazon.ca | Reduce friction on pivot; nylon for smooth rotation |
-| 7 | Alcohol wipes (70% isopropyl) | 1 box | $10.00 | Shoppers / Amazon | Cleaning validation testing |
-| 8 | Sandpaper (220 + 400 grit) | 2 sheets | $3.00 | Home Depot | Post-print finishing — smooth edges, remove layer lines |
-| 9 | Cyanoacrylate (super glue) | 1 tube | $3.00 | Dollar store / Amazon | Bonding magnets into recesses, securing silicone pad |
-| 10 | Label maker tape or vinyl sticker sheet | 1 | $4.00 | Staples / Amazon | High-contrast zone labels (backup if printed labels fade) |
-| 11 | Contingency | — | $7.00 | — | Reprints, replacement parts |
-| | **TOTAL** | | **~$75** | | Under $100 budget ✓ |
+| #   | Item                                         | Qty          | Est. Cost (CAD) | Where to Buy           | Notes                                                     |
+| --- | -------------------------------------------- | ------------ | --------------- | ---------------------- | --------------------------------------------------------- |
+| 1   | Neodymium disc magnets (6mm × 2mm)           | 1 pack (20+) | $17.99          | Amazon.ca              | For detent indexing — creates the "click" between zones   |
+| 2   | Silicone sheet (1–2mm thick, food/skin-safe) | 1 sheet      | $15.00          | Amazon.ca              | Skin-contact interface pad; cut to fit base of guide      |
+| 3   | Small compression springs (6mm OD × 10mm)    | 4–6          | $5.00           | McMaster-Carr / Amazon | For detent mechanism plunger (spring-loaded ball)         |
+| 4   | Steel ball bearings (4mm or 5mm)             | 6            | $3.00           | Amazon.ca / McMaster   | Detent ball — sits in spring, clicks into magnet recesses |
+| 5   | M3 machine screws + nuts (assorted 8–16mm)   | 1 pack       | $5.00           | Amazon.ca / Home Depot | Central pivot assembly + securing layers                  |
+| 6   | M3 flat washers + nylon washers              | 1 pack       | $2.00           | Amazon.ca              | Reduce friction on pivot; nylon for smooth rotation       |
+| 7   | Alcohol wipes (70% isopropyl)                | 1 box        | $10.00          | Shoppers / Amazon      | Cleaning validation testing                               |
+| 8   | Sandpaper (220 + 400 grit)                   | 2 sheets     | $3.00           | Home Depot             | Post-print finishing — smooth edges, remove layer lines   |
+| 9   | Cyanoacrylate (super glue)                   | 1 tube       | $3.00           | Dollar store / Amazon  | Bonding magnets into recesses, securing silicone pad      |
+| 10  | Label maker tape or vinyl sticker sheet      | 1            | $4.00           | Staples / Amazon       | High-contrast zone labels (backup if printed labels fade) |
+| 11  | Contingency                                  | —            | $7.00           | —                      | Reprints, replacement parts                               |
+|     | **TOTAL**                                    |              | **~$75**        |                        | Under $100 budget ✓                                       |
 
 **3D Printing:** Use your university's Schulich/Engineering maker space — PLA filament is typically provided free or at minimal cost. If unavailable, a spool of PLA is ~$25.
 
@@ -98,14 +98,14 @@ You already have an early CAD zone-template. Here's what each part needs:
 
 #### 2A. Print Settings
 
-| Parameter | Value |
-|-----------|-------|
-| Material | PLA (standard, widely available, skin-safe for prototype use) |
-| Layer height | 0.16–0.20mm (balances quality and speed) |
-| Infill | 40–50% (needs structural integrity for repeated use) |
-| Walls | 3–4 perimeters |
-| Supports | Only for overhangs >45° (the injection holes shouldn't need supports if printed flat) |
-| Bed adhesion | Brim (helps with warping on larger flat parts) |
+| Parameter    | Value                                                                                 |
+| ------------ | ------------------------------------------------------------------------------------- |
+| Material     | PLA (standard, widely available, skin-safe for prototype use)                         |
+| Layer height | 0.16–0.20mm (balances quality and speed)                                              |
+| Infill       | 40–50% (needs structural integrity for repeated use)                                  |
+| Walls        | 3–4 perimeters                                                                        |
+| Supports     | Only for overhangs >45° (the injection holes shouldn't need supports if printed flat) |
+| Bed adhesion | Brim (helps with warping on larger flat parts)                                        |
 
 #### 2B. Post-Processing Steps
 
@@ -212,15 +212,16 @@ Based on your usability testing sessions (SUS + timed trials), prioritize fixes:
 
 ## How the Physical Prototype Maps to the Digital Tracker
 
-| Physical Dial Feature | Digital Tracker Equivalent |
-|----------------------|---------------------------|
-| 8 injection port positions | 8 zone sectors on the radial UI |
-| Body region (user places on abdomen L, thigh R, etc.) | Region selector buttons in the app |
-| Rotate one click → next zone | Tap zone in app → log entry |
-| Arrow indicates current zone | Dashed "recommended" ring highlights best next zone |
-| No memory of past injections | App stores full history, calculates adherence, shows alerts |
+| Physical Dial Feature                                 | Digital Tracker Equivalent                                  |
+| ----------------------------------------------------- | ----------------------------------------------------------- |
+| 8 injection port positions                            | 8 zone sectors on the radial UI                             |
+| Body region (user places on abdomen L, thigh R, etc.) | Region selector buttons in the app                          |
+| Rotate one click → next zone                          | Tap zone in app → log entry                                 |
+| Arrow indicates current zone                          | Dashed "recommended" ring highlights best next zone         |
+| No memory of past injections                          | App stores full history, calculates adherence, shows alerts |
 
 **Workflow for the user:**
+
 1. Open app → see which zone/region is recommended
 2. Place physical guide on that body region
 3. Rotate dial to the recommended zone number
@@ -260,13 +261,13 @@ The app uses `localStorage` for data persistence — no server-side database nee
 
 ## Quick-Reference: Technical Specs vs. Prototype Targets
 
-| Spec | Target | How to Verify |
-|------|--------|---------------|
-| Min site spacing | ≥20mm ± 2mm | Calipers on port centers |
-| Positioning accuracy | ≤±5mm | Mark-through test on paper |
-| Needle clearance | 4–8mm | Insert pen needle through each port |
-| Biocompatibility | PLA + silicone (non-clinical prototype) | Material data sheets |
-| Durability | ≥500 uses | 50-cycle stress test, extrapolate |
-| Cleaning tolerance | Alcohol wipe 1×/use | 10-wipe label/adhesion test |
-| Logging time | ≤15s per entry | Stopwatch during usability testing |
-| UI readability | ≥14pt equivalent | Visual inspection |
+| Spec                 | Target                                  | How to Verify                       |
+| -------------------- | --------------------------------------- | ----------------------------------- |
+| Min site spacing     | ≥20mm ± 2mm                             | Calipers on port centers            |
+| Positioning accuracy | ≤±5mm                                   | Mark-through test on paper          |
+| Needle clearance     | 4–8mm                                   | Insert pen needle through each port |
+| Biocompatibility     | PLA + silicone (non-clinical prototype) | Material data sheets                |
+| Durability           | ≥500 uses                               | 50-cycle stress test, extrapolate   |
+| Cleaning tolerance   | Alcohol wipe 1×/use                     | 10-wipe label/adhesion test         |
+| Logging time         | ≤15s per entry                          | Stopwatch during usability testing  |
+| UI readability       | ≥14pt equivalent                        | Visual inspection                   |

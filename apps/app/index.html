@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>RotaGuide — Injection Site Tracker</title>
+    <meta
+      name="description"
+      content="Track insulin injection-site rotation. Works offline; all data stays on your device."
+    />
+    <meta name="theme-color" content="#2D7A5F" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="RotaGuide" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!-- Self-hosted so the app works offline and loads no third-party
+         resources — consistent with the local-only data promise. -->
+    <link rel="preconnect" href="/" />
+
+    <!-- Applied before first paint so a dark-mode user never sees a
+         white flash on launch. -->
+    <script>
+      (function () {
+        try {
+          var theme = 'system';
+          var dark =
+            theme === 'dark' ||
+            (theme === 'system' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>RotaGuide needs JavaScript enabled to track your injection sites.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

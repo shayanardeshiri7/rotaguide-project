@@ -1,0 +1,17 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# These ship prebuilt native binaries via a postinstall script. Without
+# them vite/vitest and the Next lint resolver cannot run, and pnpm 11
+# fails the install outright rather than warning.
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true
+
+# Vite 6 / Next 15 / React 19 all resolve React from the root.
+# Hoisting these keeps a single copy so hooks don't break across workspaces.
+publicHoistPattern:
+  - "*eslint*"
+  - "*prettier*"
+  - "@types/*"

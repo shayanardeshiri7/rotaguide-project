@@ -1,0 +1,4 @@
+{
+  "extends": "@rotaguide/config/tsconfig.react.json",
+  "include": ["src/**/*"]
+}
