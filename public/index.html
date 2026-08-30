@@ -6,6 +6,12 @@
 <title>RotaGuide — Injection Site Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- PWA -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#2D7A5F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="RotaGuide">
 <style>
   :root {
     --bg: #F7F5F2;
@@ -98,6 +104,10 @@
     padding: 20px;
     margin-bottom: 14px;
     box-shadow: var(--shadow);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
   }
   .card-title {
     font-size: 13px;
@@ -119,12 +129,15 @@
     width: 280px;
     height: 280px;
     cursor: pointer;
+    filter: drop-shadow(0 6px 24px rgba(0,0,0,0.22));
+    overflow: visible;
   }
   .zone-sector {
-    transition: var(--transition);
+    transition: filter 0.15s ease, opacity 0.15s ease;
     cursor: pointer;
+    outline: none;
   }
-  .zone-sector:hover { opacity: 0.85; }
+  .zone-sector:hover { filter: brightness(1.12); opacity: 1 !important; }
   .zone-label {
     font-family: 'DM Sans', sans-serif;
     font-size: 13px;
@@ -143,30 +156,45 @@
     text-anchor: middle;
     dominant-baseline: central;
   }
-  .center-circle {
-    fill: var(--bg);
-    stroke: var(--surface-alt);
-    stroke-width: 2;
+  .center-circle-shadow {
+    fill: rgba(0,0,0,0.18);
+  }
+  .center-circle-bg {
+    fill: var(--surface);
+  }
+  .center-circle-ring {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    opacity: 0.5;
   }
   .center-text {
     font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    fill: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--accent);
     text-anchor: middle;
     dominant-baseline: central;
+    letter-spacing: 0.5px;
   }
   .recommended-ring {
     fill: none;
-    stroke: var(--text);
-    stroke-width: 3;
-    stroke-dasharray: 4 3;
-    opacity: 0.7;
-    animation: pulse-ring 2s ease-in-out infinite;
+    stroke: #fff;
+    stroke-width: 2.5;
+    stroke-dasharray: none;
+    opacity: 0;
+    animation: none;
+    pointer-events: none;
   }
-  @keyframes pulse-ring {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 0.3; }
+  .rec-arrow {
+    fill: var(--accent);
+    animation: pulse-arrow 2s ease-in-out infinite;
+    pointer-events: none;
+    filter: drop-shadow(0 0 5px rgba(45,122,95,0.7));
+  }
+  @keyframes pulse-arrow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
   }
 
   /* ── Body Region Toggle ── */
@@ -190,8 +218,10 @@
   }
   .region-btn.active {
     border-color: var(--accent);
-    background: var(--accent-light);
-    color: var(--accent-dark);
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(45,122,95,0.32);
+    font-weight: 600;
   }
 
   /* ── Log Button ── */
@@ -199,23 +229,70 @@
     width: 100%;
     padding: 16px;
     border: none;
-    background: var(--accent);
+    background: linear-gradient(135deg, #2D7A5F 0%, #1a5c45 100%);
     color: white;
     font-family: inherit;
     font-size: 16px;
     font-weight: 600;
     border-radius: var(--radius);
     cursor: pointer;
-    transition: var(--transition);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
     margin-top: 8px;
+    box-shadow: 0 4px 18px rgba(45,122,95,0.38);
+    position: relative;
+    overflow: hidden;
   }
-  .log-btn:hover { background: var(--accent-dark); }
+  .log-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -75%;
+    width: 50%; height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transform: skewX(-20deg);
+    animation: btnShine 3.5s ease-in-out infinite;
+  }
+  @keyframes btnShine {
+    0%   { left: -75%; }
+    40%  { left: 125%; }
+    100% { left: 125%; }
+  }
+  .log-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(45,122,95,0.48);
+  }
+  .log-btn:active:not(:disabled) { transform: translateY(0); }
   .log-btn:disabled {
     background: var(--surface-alt);
     color: var(--text-muted);
     cursor: not-allowed;
+    box-shadow: none;
   }
+  .log-btn:disabled::after { display: none; }
 
+  /* ── SpotlightCard (react-bits pattern) ── */
+  .card-spotlight {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(400px at 50% 50%, rgba(45,122,95,0.07), transparent 70%);
+  }
+  .card:hover .card-spotlight { opacity: 1; }
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px 12px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
   /* ── Stats Row ── */
   .stats-row {
     display: grid;
@@ -223,13 +300,7 @@
     gap: 10px;
     margin-bottom: 14px;
   }
-  .stat-card {
-    background: var(--surface);
-    border-radius: var(--radius);
-    padding: 16px 12px;
-    text-align: center;
-    box-shadow: var(--shadow);
-  }
+  /* stat-card styles defined above */
   .stat-value {
     font-family: 'JetBrains Mono', monospace;
     font-size: 24px;
@@ -476,6 +547,94 @@
     color: var(--text-muted);
     font-weight: 500;
   }
+
+  /* ── Accessibility ── */
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  button:focus:not(:focus-visible) { outline: none; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  /* ── Dark Mode ── */
+  [data-theme="dark"] {
+    --bg: #1A1A1A;
+    --surface: #242424;
+    --surface-alt: #2E2E2E;
+    --text: #F0EDE8;
+    --text-muted: #9B968F;
+    --accent-light: #1A3D2E;
+    --warn-light: #3D1A10;
+  }
+
+  /* ── Onboarding ── */
+  .onboard-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 300; opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .onboard-overlay.show { opacity: 1; pointer-events: all; }
+  .onboard-box {
+    background: var(--surface); border-radius: var(--radius);
+    padding: 28px 24px; max-width: 320px; width: 90%;
+    box-shadow: var(--shadow-lg);
+  }
+  .onboard-dots { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
+  .onboard-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--surface-alt); transition: var(--transition);
+    flex-shrink: 0;
+  }
+  .onboard-dot.active { background: var(--accent); width: 20px; border-radius: 4px; }
+  .onboard-step { display: none; min-height: 90px; }
+  .onboard-step.active { display: block; }
+  .onboard-step h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .onboard-step p { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+  .onboard-footer {
+    display: flex; justify-content: space-between;
+    align-items: center; margin-top: 24px;
+  }
+  .onboard-skip {
+    background: none; border: none; font-family: inherit;
+    font-size: 13px; color: var(--text-muted); cursor: pointer;
+    padding: 8px; border-radius: var(--radius-sm);
+  }
+  .onboard-next {
+    background: var(--accent); color: white; border: none;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    padding: 12px 20px; border-radius: var(--radius-sm); cursor: pointer;
+    transition: var(--transition); min-width: 90px; text-align: center;
+  }
+  .onboard-next:hover { background: var(--accent-dark); }
+
+  /* ── Section transition ── */
+  .section.active {
+    animation: sectionIn 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  @keyframes sectionIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Region adherence rows ── */
+  .region-adh-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--surface-alt);
+  }
+  .region-adh-row:last-child { border-bottom: none; }
+  .region-adh-name { font-size: 13px; font-weight: 500; width: 90px; flex-shrink: 0; }
+  .region-adh-bar-bg {
+    flex: 1; height: 8px; background: var(--surface-alt);
+    border-radius: 4px; overflow: hidden;
+  }
+  .region-adh-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+  .region-adh-pct { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted); width: 36px; text-align: right; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -484,20 +643,22 @@
   <!-- Header -->
   <div class="header">
     <h1>Rota<span>Guide</span></h1>
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted); cursor:pointer" onclick="showSection('settings')">
-      <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.32 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-    </svg>
+    <button onclick="showSection('settings')" aria-label="Open settings" style="background:none;border:none;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:8px;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text-muted);" aria-hidden="true">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.32 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
   </div>
 
   <!-- Nav Tabs -->
-  <div class="nav-tabs">
-    <button class="nav-tab active" onclick="showSection('log')">Log</button>
-    <button class="nav-tab" onclick="showSection('history')">History</button>
-    <button class="nav-tab" onclick="showSection('insights')">Insights</button>
+  <div class="nav-tabs" role="tablist" aria-label="App sections">
+    <button class="nav-tab active" role="tab" aria-selected="true" aria-controls="section-log" id="tab-log" onclick="showSection('log')">Log</button>
+    <button class="nav-tab" role="tab" aria-selected="false" aria-controls="section-history" id="tab-history" onclick="showSection('history')">History</button>
+    <button class="nav-tab" role="tab" aria-selected="false" aria-controls="section-insights" id="tab-insights" onclick="showSection('insights')">Insights</button>
   </div>
 
   <!-- ═══════ LOG SECTION ═══════ -->
-  <div class="section active" id="section-log">
+  <div class="section active" id="section-log" role="tabpanel" aria-labelledby="tab-log">
     <div class="card">
       <div class="card-title">Body Region</div>
       <div class="region-selector" id="regionSelector"></div>
@@ -506,7 +667,7 @@
     <div class="card">
       <div class="card-title">Select Zone — Tap to log</div>
       <div class="dial-container">
-        <svg class="dial-svg" id="dialSVG" viewBox="0 0 280 280"></svg>
+        <svg class="dial-svg" id="dialSVG" viewBox="0 0 280 280" role="group" aria-label="Injection zone dial"></svg>
       </div>
       <div id="zoneHint" style="text-align:center; font-size:13px; color:var(--text-muted); margin-top:-10px; margin-bottom:10px;"></div>
       <button class="log-btn" id="logBtn" disabled onclick="logInjection()">Select a zone to log</button>
@@ -514,7 +675,7 @@
   </div>
 
   <!-- ═══════ HISTORY SECTION ═══════ -->
-  <div class="section" id="section-history">
+  <div class="section" id="section-history" role="tabpanel" aria-labelledby="tab-history">
     <div class="stats-row">
       <div class="stat-card">
         <div class="stat-value" id="statTotal">0</div>
@@ -541,9 +702,15 @@
   </div>
 
   <!-- ═══════ INSIGHTS SECTION ═══════ -->
-  <div class="section" id="section-insights">
+  <div class="section" id="section-insights" role="tabpanel" aria-labelledby="tab-insights">
     <div class="card">
-      <div class="card-title">Zone Usage — Last 7 Days</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <span class="card-title" style="margin-bottom:0" id="heatmapTitle">Zone Usage — Last 7 Days</span>
+        <div style="display:flex; gap:4px;">
+          <button class="region-btn active" id="hm7btn" onclick="setHeatmapDays(7)" style="margin:0;padding:6px 10px;font-size:12px;" aria-pressed="true">7d</button>
+          <button class="region-btn" id="hm30btn" onclick="setHeatmapDays(30)" style="margin:0;padding:6px 10px;font-size:12px;" aria-pressed="false">30d</button>
+        </div>
+      </div>
       <div class="heatmap-grid" id="heatmapGrid"></div>
       <div class="heatmap-grid" id="heatmapLabels" style="margin-top:0;"></div>
     </div>
@@ -565,6 +732,11 @@
     </div>
 
     <div class="card">
+      <div class="card-title">Adherence by Region</div>
+      <div id="regionAdherence"></div>
+    </div>
+
+    <div class="card">
       <div class="card-title">Repeat-Site Alerts</div>
       <div id="alertsContainer">
         <div class="empty-state">
@@ -575,7 +747,7 @@
   </div>
 
   <!-- ═══════ SETTINGS SECTION ═══════ -->
-  <div class="section" id="section-settings">
+  <div class="section" id="section-settings" role="region" aria-label="Settings">
     <div class="card">
       <div class="card-title">Settings</div>
       <div class="setting-row">
@@ -601,6 +773,13 @@
           <option value="8">8 injections</option>
         </select>
       </div>
+      <div class="setting-row">
+        <div>
+          <div class="setting-label">Dark Mode</div>
+          <div class="setting-desc">Switch to dark colour scheme</div>
+        </div>
+        <button class="region-btn" id="darkModeBtn" onclick="toggleDarkMode()" style="margin:0;" aria-pressed="false">Off</button>
+      </div>
     </div>
     <div class="card">
       <div class="card-title">Data</div>
@@ -623,15 +802,27 @@
       <button class="region-btn" onclick="showSection('log')" style="margin:0;">← Back to Log</button>
     </div>
   </div>
+
+  <!-- Onboarding -->
+  <div class="onboard-overlay" id="onboardOverlay" role="dialog" aria-modal="true" aria-labelledby="onboardTitle">
+    <div class="onboard-box">
+      <div class="onboard-dots" id="onboardDots"></div>
+      <div id="onboardSteps"></div>
+      <div class="onboard-footer">
+        <button class="onboard-skip" onclick="skipOnboarding()">Skip</button>
+        <button class="onboard-next" id="onboardNextBtn" onclick="nextOnboardStep()">Next →</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Toast -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <!-- Clear Confirmation Modal -->
-<div class="modal-overlay" id="clearModal">
+<div class="modal-overlay" id="clearModal" role="dialog" aria-modal="true" aria-labelledby="clearModalTitle">
   <div class="modal-box">
-    <h3>Clear All Data?</h3>
+    <h3 id="clearModalTitle">Clear All Data?</h3>
     <p>This will permanently delete all your injection logs. This action cannot be undone.</p>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="hideClearModal()">Cancel</button>
@@ -641,7 +832,7 @@
 </div>
 
 <!-- Log Confirmation Modal -->
-<div class="modal-overlay" id="logModal">
+<div class="modal-overlay" id="logModal" role="dialog" aria-modal="true" aria-labelledby="logModalTitle">
   <div class="modal-box">
     <h3 id="logModalTitle">Log Injection?</h3>
     <p id="logModalDesc"></p>
@@ -669,13 +860,16 @@ let state = {
   threshold: 5,
   selectedRegion: 'abdomen-L',
   selectedZone: null,
+  tutorialDone: false,
+  darkMode: false,
   logs: [], // { id, region, zone, timestamp }
 };
+let heatmapDays = 7;
 
 // ═══════ PERSISTENCE (localStorage with fallback) ═══════
 function saveState() {
   try {
-    const data = { zoneCount: state.zoneCount, threshold: state.threshold, logs: state.logs };
+    const data = { zoneCount: state.zoneCount, threshold: state.threshold, logs: state.logs, tutorialDone: state.tutorialDone, darkMode: state.darkMode };
     localStorage.setItem('rotaguide_v2', JSON.stringify(data));
   } catch(e) { /* silent fail for environments without localStorage */ }
 }
@@ -688,6 +882,8 @@ function loadState() {
       state.zoneCount = data.zoneCount || 12;
       state.threshold = data.threshold || 5;
       state.logs = data.logs || [];
+      state.tutorialDone = data.tutorialDone || false;
+      state.darkMode = data.darkMode || false;
     }
     // Migrate old data if present
     const old = localStorage.getItem('rotaguide_data');
@@ -700,17 +896,28 @@ function loadState() {
     }
     document.getElementById('zoneCountSelect').value = state.zoneCount;
     document.getElementById('thresholdSelect').value = state.threshold;
+    if (state.darkMode) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      const btn = document.getElementById('darkModeBtn');
+      if (btn) { btn.textContent = 'On'; btn.setAttribute('aria-pressed', 'true'); }
+    }
   } catch(e) { /* silent fail */ }
 }
 
 // ═══════ NAVIGATION ═══════
 function showSection(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+  });
   document.getElementById('section-' + id).classList.add('active');
   const tabs = document.querySelectorAll('.nav-tab');
   const tabMap = { log: 0, history: 1, insights: 2 };
-  if (tabMap[id] !== undefined) tabs[tabMap[id]].classList.add('active');
+  if (tabMap[id] !== undefined) {
+    tabs[tabMap[id]].classList.add('active');
+    tabs[tabMap[id]].setAttribute('aria-selected', 'true');
+  }
   if (id === 'history') renderHistory();
   if (id === 'insights') renderInsights();
 }
@@ -719,7 +926,7 @@ function showSection(id) {
 function renderRegions() {
   const container = document.getElementById('regionSelector');
   container.innerHTML = REGIONS.map(r =>
-    `<button class="region-btn ${r.id === state.selectedRegion ? 'active' : ''}" onclick="selectRegion('${r.id}')">${r.label}</button>`
+    `<button class="region-btn ${r.id === state.selectedRegion ? 'active' : ''}" onclick="selectRegion('${r.id}')" aria-pressed="${r.id === state.selectedRegion}">${r.label}</button>`
   ).join('');
 }
 
@@ -736,6 +943,8 @@ function renderDial() {
   const svg = document.getElementById('dialSVG');
   const cx = 140, cy = 140, R = 120, innerR = 45;
   const n = state.zoneCount;
+  const labelFontSize = Math.max(9, 14 - Math.floor((n - 6) / 2));
+  const countFontSize = Math.max(7, 10 - Math.floor((n - 6) / 2));
   const angleStep = (2 * Math.PI) / n;
 
   // Recent usage for this region
@@ -754,7 +963,21 @@ function renderDial() {
     if (lastTs < oldestTime) { oldestTime = lastTs; recommendedZone = i; }
   }
 
-  let html = '';
+  // SVG defs: shine gradient + brightness filter for selected zone + hatch pattern for recent zones
+  let html = `<defs>
+    <radialGradient id="dialShine" cx="50%" cy="15%" r="85%" gradientUnits="userSpaceOnUse" gradientTransform="translate(${cx},${cy}) scale(${R}) translate(-1,-1)">
+      <stop offset="0%" stop-color="white" stop-opacity="0.28"/>
+      <stop offset="60%" stop-color="white" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="selBright" x="-20%" y="-20%" width="140%" height="140%">
+      <feColorMatrix type="matrix" values="1.3 0 0 0 0.06  0 1.3 0 0 0.06  0 0 1.3 0 0.06  0 0 0 1 0"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="white" flood-opacity="0.45"/>
+    </filter>
+    <pattern id="hatch" patternUnits="userSpaceOnUse" width="5" height="5" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="5" stroke="rgba(0,0,0,0.15)" stroke-width="1.2"/>
+    </pattern>
+  </defs>`;
 
   // Draw sectors
   for (let i = 0; i < n; i++) {
@@ -771,49 +994,91 @@ function renderDial() {
     const iy2 = cy + innerR * Math.sin(endAngle);
 
     const largeArc = angleStep > Math.PI ? 1 : 0;
-
     const path = `M ${ix1} ${iy1} L ${x1} ${y1} A ${R} ${R} 0 ${largeArc} 1 ${x2} ${y2} L ${ix2} ${iy2} A ${innerR} ${innerR} 0 ${largeArc} 0 ${ix1} ${iy1} Z`;
 
     const isRecent = recentZones.includes(i);
     const isSelected = state.selectedZone === i;
+    const isRecommended = i === recommendedZone;
     const color = ZONE_COLORS[i % ZONE_COLORS.length];
-    const opacity = isRecent ? 0.35 : (isSelected ? 1 : 0.8);
-    const strokeW = isSelected ? 3 : 0;
+    // Recently-used: 0.6 opacity (visible but clearly dimmed); selected: always full opacity
+    const opacity = isSelected ? 1 : (isRecent ? 0.6 : 1);
+    // Sector gaps: bg-color stroke so sectors look cleanly separated
+    const gapStroke = `stroke="rgba(247,245,242,0.9)" stroke-width="${isSelected ? 2 : 1.5}"`;
+    const selectedFilter = isSelected ? 'filter="url(#selBright)"' : '';
 
-    html += `<path class="zone-sector" d="${path}" fill="${color}" opacity="${opacity}" stroke="${isSelected ? '#1A1A1A' : 'none'}" stroke-width="${strokeW}" onclick="selectZone(${i})" />`;
+    // Base sector
+    html += `<path class="zone-sector" d="${path}" fill="${color}" opacity="${opacity}" ${gapStroke} stroke-linejoin="round" ${selectedFilter} onclick="selectZone(${i})" role="button" tabindex="-1" aria-label="Zone ${i+1}${isRecommended ? ', recommended' : ''}${isSelected ? ', selected' : ''}" aria-pressed="${isSelected}" />`;
+    // Shine overlay
+    html += `<path d="${path}" fill="url(#dialShine)" pointer-events="none" opacity="${isRecent ? 0.5 : 1}"/>`;
+    // Hatch overlay for recently-used zones (diagonal lines pattern)
+    if (isRecent) {
+      html += `<path d="${path}" fill="url(#hatch)" pointer-events="none" opacity="0.65"/>`;
+    }
+    // Selected: white inner arc border
+    if (isSelected) {
+      const innerArcPath = `M ${ix1} ${iy1} A ${innerR} ${innerR} 0 ${largeArc} 1 ${ix2} ${iy2}`;
+      html += `<path d="${innerArcPath}" fill="none" stroke="white" stroke-width="2.5" pointer-events="none" opacity="0.75"/>`;
+    }
 
-    // Labels
+    // Labels: clean zone number only (no "Z" prefix); usage count subtler and only if > 0
     const midAngle = startAngle + angleStep / 2;
     const labelR = (R + innerR) / 2;
     const lx = cx + labelR * Math.cos(midAngle);
     const ly = cy + labelR * Math.sin(midAngle);
-
-    html += `<text class="zone-label" x="${lx}" y="${ly - 6}" onclick="selectZone(${i})">Z${i + 1}</text>`;
     const count = zoneCounts[i] || 0;
+    const labelY = count > 0 ? ly - (labelFontSize / 2 + 1) : ly;
+
+    html += `<text class="zone-label" x="${lx}" y="${labelY}" font-size="${labelFontSize}" onclick="selectZone(${i})">${i + 1}</text>`;
     if (count > 0) {
-      html += `<text class="zone-number" x="${lx}" y="${ly + 8}" onclick="selectZone(${i})">${count}×</text>`;
+      html += `<text class="zone-number" x="${lx}" y="${ly + (countFontSize / 2 + 2)}" font-size="${countFontSize}" fill="rgba(255,255,255,0.55)" onclick="selectZone(${i})">${count}×</text>`;
     }
   }
 
-  // Recommended zone ring
-  const recStart = recommendedZone * angleStep - Math.PI / 2;
-  const recEnd = (recommendedZone + 1) * angleStep - Math.PI / 2;
-  const midR = (R + innerR) / 2;
-  const ringR = (R - innerR) / 2 - 2;
-  const ringCx = cx + midR * Math.cos(recStart + angleStep / 2);
-  const ringCy = cy + midR * Math.sin(recStart + angleStep / 2);
-  html += `<circle class="recommended-ring" cx="${ringCx}" cy="${ringCy}" r="${ringR}" />`;
+  // Outer border ring (subtle definition around the dial edge)
+  html += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(0,0,0,0.1)" stroke-width="1.5" pointer-events="none"/>`;
 
-  // Center circle
-  html += `<circle class="center-circle" cx="${cx}" cy="${cy}" r="${innerR - 4}" />`;
+  // Recommended zone: triangular arrow OUTSIDE the dial ring, pointing inward
+  const recMidAngle = recommendedZone * angleStep - Math.PI / 2 + angleStep / 2;
+  const arrowTipR = R + 7;
+  const arrowBaseR = R + 18;
+  const arrowHalfW = 6.5;
+  const tipX = cx + arrowTipR * Math.cos(recMidAngle);
+  const tipY = cy + arrowTipR * Math.sin(recMidAngle);
+  const baseCxA = cx + arrowBaseR * Math.cos(recMidAngle);
+  const baseCyA = cy + arrowBaseR * Math.sin(recMidAngle);
+  const perpX = -Math.sin(recMidAngle);
+  const perpY = Math.cos(recMidAngle);
+  const b1x = baseCxA + arrowHalfW * perpX;
+  const b1y = baseCyA + arrowHalfW * perpY;
+  const b2x = baseCxA - arrowHalfW * perpX;
+  const b2y = baseCyA - arrowHalfW * perpY;
+  html += `<polygon class="rec-arrow" points="${tipX.toFixed(2)},${tipY.toFixed(2)} ${b1x.toFixed(2)},${b1y.toFixed(2)} ${b2x.toFixed(2)},${b2y.toFixed(2)}" />`;
+
+  // Center circle — slightly larger for more presence (react-bits GlassSurface pattern)
+  const cr = innerR - 1; // 44px — slightly larger than before (was 41px)
+  html += `<circle cx="${cx}" cy="${cy + 3}" r="${cr}" fill="rgba(0,0,0,0.18)" class="center-circle-shadow"/>`;
+  html += `<circle cx="${cx}" cy="${cy}" r="${cr}" class="center-circle-bg"/>`;
+  html += `<circle cx="${cx}" cy="${cy}" r="${cr}" class="center-circle-ring"/>`;
+
+  // Center label: prominent region name + secondary zone count line
   const regionLabel = REGIONS.find(r => r.id === state.selectedRegion)?.label || '';
-  html += `<text class="center-text" x="${cx}" y="${cy}">${regionLabel}</text>`;
+  const parts = regionLabel.split(' ');
+  if (parts.length === 2) {
+    html += `<text class="center-text" x="${cx}" y="${cy - 10}" font-size="11" font-weight="700">${parts[0]}</text>`;
+    html += `<text class="center-text" x="${cx}" y="${cy + 5}" font-size="11" font-weight="700">${parts[1]}</text>`;
+    html += `<text class="center-text" x="${cx}" y="${cy + 19}" font-size="8" opacity="0.55">${n} zones</text>`;
+  } else {
+    html += `<text class="center-text" x="${cx}" y="${cy - 5}" font-size="11" font-weight="700">${regionLabel}</text>`;
+    html += `<text class="center-text" x="${cx}" y="${cy + 9}" font-size="8" opacity="0.55">${n} zones</text>`;
+  }
 
   svg.innerHTML = html;
+  svg.setAttribute('role', 'group');
+  svg.setAttribute('aria-label', 'Injection zone dial');
 
   // Update hint
   const hint = document.getElementById('zoneHint');
-  hint.textContent = `Recommended: Zone ${recommendedZone + 1} (dashed circle)`;
+  hint.textContent = `✦ Recommended: Zone ${recommendedZone + 1}`;
 }
 
 function selectZone(z) {
@@ -834,6 +1099,25 @@ function updateLogBtn() {
   }
 }
 
+// ── Keyboard navigation for zone dial ──
+document.addEventListener('keydown', function(e) {
+  if (!document.getElementById('section-log').classList.contains('active')) return;
+  if (!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Enter',' '].includes(e.key)) return;
+  const n = state.zoneCount;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    const next = state.selectedZone === null ? 0 : (state.selectedZone + 1) % n;
+    selectZone(next);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    const prev = state.selectedZone === null ? n - 1 : (state.selectedZone - 1 + n) % n;
+    selectZone(prev);
+  } else if ((e.key === 'Enter' || e.key === ' ') && state.selectedZone !== null) {
+    e.preventDefault();
+    logInjection();
+  }
+});
+
 // ═══════ LOGGING ═══════
 function logInjection() {
   // Check if this zone was recently used
@@ -846,6 +1130,7 @@ function logInjection() {
     document.getElementById('logModalDesc').textContent =
       `Zone ${state.selectedZone + 1} on ${regionLabel} was used within your last ${state.threshold} injections. Repeated use increases lipohypertrophy risk. Log anyway?`;
     document.getElementById('logModal').classList.add('show');
+    trapFocus('logModal');
     return;
   }
   confirmLog();
@@ -866,6 +1151,7 @@ function confirmLog() {
   renderDial();
   updateLogBtn();
   showToast('Injection logged ✓');
+  spawnSpark(document.getElementById('logBtn'));
 }
 
 function hideLogModal() { document.getElementById('logModal').classList.remove('show'); }
@@ -876,17 +1162,41 @@ function deleteLog(id) {
   renderHistory();
 }
 
+// ── CountUp animation (inspired by react-bits CountUp) ──
+function animateCount(el, to, duration) {
+  duration = duration || 550;
+  const from = parseInt(el.textContent) || 0;
+  if (from === to || isNaN(to)) { el.textContent = isNaN(to) ? to : to; return; }
+  const start = performance.now();
+  const tick = function(ts) {
+    const p = Math.min((ts - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.round(from + (to - from) * eased);
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
 // ═══════ HISTORY ═══════
 function renderHistory() {
   const list = document.getElementById('logList');
   const empty = document.getElementById('emptyHistory');
   const sorted = [...state.logs].reverse();
 
-  document.getElementById('statTotal').textContent = state.logs.length;
-  document.getElementById('statStreak').textContent = calcStreak();
+  animateCount(document.getElementById('statTotal'), state.logs.length);
+  animateCount(document.getElementById('statStreak'), calcStreak());
 
   const adh = calcAdherence();
-  document.getElementById('statAdherence').textContent = adh !== null ? adh + '%' : '—';
+  const adhEl = document.getElementById('statAdherence');
+  if (adh !== null) {
+    animateCount(adhEl, adh);
+    // Append % after animation settles
+    setTimeout(function() {
+      if (adhEl.textContent === String(adh)) adhEl.textContent = adh + '%';
+    }, 580);
+  } else {
+    adhEl.textContent = '—';
+  }
 
   if (sorted.length === 0) {
     list.innerHTML = '';
@@ -948,14 +1258,25 @@ function renderInsights() {
   renderMiniChart();
   renderAdherence();
   renderAlerts();
+  renderRegionAdherence();
+}
+
+function setHeatmapDays(n) {
+  heatmapDays = n;
+  document.getElementById('hm7btn').classList.toggle('active', n === 7);
+  document.getElementById('hm30btn').classList.toggle('active', n === 30);
+  document.getElementById('hm7btn').setAttribute('aria-pressed', String(n === 7));
+  document.getElementById('hm30btn').setAttribute('aria-pressed', String(n === 30));
+  document.getElementById('heatmapTitle').textContent = 'Zone Usage — Last ' + n + ' Days';
+  renderHeatmap();
 }
 
 function renderHeatmap() {
   const grid = document.getElementById('heatmapGrid');
   const labels = document.getElementById('heatmapLabels');
   const n = state.zoneCount;
-  const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-  const recent = state.logs.filter(l => new Date(l.timestamp) >= sevenDaysAgo);
+  const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - heatmapDays);
+  const recent = state.logs.filter(l => new Date(l.timestamp) >= cutoff);
 
   const counts = {};
   for (let i = 0; i < n; i++) counts[i] = 0;
@@ -1037,6 +1358,79 @@ function renderAlerts() {
   }
 }
 
+function renderRegionAdherence() {
+  const container = document.getElementById('regionAdherence');
+  if (!container) return;
+  const rows = REGIONS.map(r => {
+    const logs = state.logs.filter(l => l.region === r.id);
+    if (logs.length < 2) {
+      return `<div class="region-adh-row">
+        <span class="region-adh-name">${r.label}</span>
+        <div class="region-adh-bar-bg"><div class="region-adh-bar-fill" style="width:0%;background:var(--surface-alt)"></div></div>
+        <span class="region-adh-pct" style="color:var(--text-muted)">—</span>
+      </div>`;
+    }
+    let good = 0;
+    for (let i = 1; i < logs.length; i++) {
+      if (logs[i].zone !== logs[i-1].zone) good++;
+    }
+    const pct = Math.round((good / (logs.length - 1)) * 100);
+    const color = pct >= 80 ? 'var(--accent)' : pct >= 50 ? 'var(--zone-5)' : 'var(--warn)';
+    return `<div class="region-adh-row">
+      <span class="region-adh-name">${r.label}</span>
+      <div class="region-adh-bar-bg"><div class="region-adh-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+      <span class="region-adh-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+  container.innerHTML = rows;
+}
+
+// ── ClickSpark — canvas burst feedback (inspired by react-bits ClickSpark) ──
+function spawnSpark(btn) {
+  var canvas = document.createElement('canvas');
+  var rect = btn.getBoundingClientRect();
+  Object.assign(canvas.style, {
+    position: 'fixed',
+    top: rect.top + 'px',
+    left: rect.left + 'px',
+    width: rect.width + 'px',
+    height: rect.height + 'px',
+    pointerEvents: 'none',
+    zIndex: '150'
+  });
+  canvas.width = Math.round(rect.width);
+  canvas.height = Math.round(rect.height);
+  document.body.appendChild(canvas);
+  var ctx = canvas.getContext('2d');
+  var cx = canvas.width / 2, cy = canvas.height / 2;
+  var COUNT = 8, DURATION = 440, RADIUS = 30, SIZE = 9;
+  var startTime = performance.now();
+  var tick = function(ts) {
+    var p = Math.min((ts - startTime) / DURATION, 1);
+    var eased = p * (2 - p);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (var i = 0; i < COUNT; i++) {
+      var angle = (2 * Math.PI * i) / COUNT;
+      var dist = eased * RADIUS;
+      var len = SIZE * (1 - eased);
+      var x1 = cx + dist * Math.cos(angle);
+      var y1 = cy + dist * Math.sin(angle);
+      var x2 = cx + (dist + len) * Math.cos(angle);
+      var y2 = cy + (dist + len) * Math.sin(angle);
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 2.5;
+      ctx.globalAlpha = Math.max(0, 1 - eased);
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+    if (p < 1) requestAnimationFrame(tick);
+    else canvas.remove();
+  };
+  requestAnimationFrame(tick);
+}
+
 // ═══════ SETTINGS ═══════
 function updateZoneCount(val) {
   state.zoneCount = parseInt(val);
@@ -1052,7 +1446,10 @@ function updateThreshold(val) {
   renderDial();
 }
 
-function showClearModal() { document.getElementById('clearModal').classList.add('show'); }
+function showClearModal() {
+  document.getElementById('clearModal').classList.add('show');
+  trapFocus('clearModal');
+}
 function hideClearModal() { document.getElementById('clearModal').classList.remove('show'); }
 
 function clearAllData() {
@@ -1087,11 +1484,101 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
+// ── Modal focus management ──
+function trapFocus(modalId) {
+  const modal = document.getElementById(modalId);
+  const firstBtn = modal.querySelector('button');
+  if (firstBtn) firstBtn.focus();
+}
+
+// ═══════ ONBOARDING ═══════
+const ONBOARD_STEPS = [
+  { title: 'Welcome to RotaGuide', body: 'RotaGuide helps you rotate insulin injection sites to prevent lipohypertrophy — a condition caused by injecting in the same spot repeatedly.' },
+  { title: 'Pick a Body Region', body: 'Tap a body region — Abdomen L/R, Thigh L/R, or Arm L/R — to focus the dial on that area.' },
+  { title: 'Select a Zone', body: 'Tap a coloured zone on the dial. The dashed ring marks the zone you haven\'t used recently — that\'s your best choice.' },
+  { title: 'Log Your Injection', body: 'Tap the green Log button to save. RotaGuide will warn you if you re-use a zone too soon.' },
+];
+let onboardStep = 0;
+
+function initOnboarding() {
+  if (state.tutorialDone) return;
+  const dots = document.getElementById('onboardDots');
+  const steps = document.getElementById('onboardSteps');
+  dots.innerHTML = ONBOARD_STEPS.map((_, i) =>
+    `<div class="onboard-dot ${i === 0 ? 'active' : ''}" id="odot${i}"></div>`
+  ).join('');
+  steps.innerHTML = ONBOARD_STEPS.map((s, i) =>
+    `<div class="onboard-step ${i === 0 ? 'active' : ''}" id="ostep${i}"><h3 id="onboardTitle">${s.title}</h3><p>${s.body}</p></div>`
+  ).join('');
+  document.getElementById('onboardOverlay').classList.add('show');
+  const btn = document.getElementById('onboardNextBtn');
+  if (btn) btn.focus();
+}
+
+function nextOnboardStep() {
+  document.getElementById('ostep' + onboardStep).classList.remove('active');
+  document.getElementById('odot' + onboardStep).classList.remove('active');
+  onboardStep++;
+  if (onboardStep >= ONBOARD_STEPS.length) { skipOnboarding(); return; }
+  document.getElementById('ostep' + onboardStep).classList.add('active');
+  document.getElementById('odot' + onboardStep).classList.add('active');
+  const btn = document.getElementById('onboardNextBtn');
+  if (btn) btn.textContent = onboardStep === ONBOARD_STEPS.length - 1 ? 'Got it ✓' : 'Next →';
+}
+
+function skipOnboarding() {
+  document.getElementById('onboardOverlay').classList.remove('show');
+  state.tutorialDone = true;
+  saveState();
+}
+
+// ═══════ DARK MODE ═══════
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? '' : 'dark';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  const btn = document.getElementById('darkModeBtn');
+  if (btn) {
+    btn.textContent = isDark ? 'Off' : 'On';
+    btn.setAttribute('aria-pressed', String(!isDark));
+  }
+  state.darkMode = !isDark;
+  saveState();
+}
+
+// ── SpotlightCard mouse tracking (react-bits SpotlightCard pattern) ──
+function initSpotlight() {
+  document.querySelectorAll('.card').forEach(function(card) {
+    // inject the spotlight layer
+    var spot = document.createElement('div');
+    spot.className = 'card-spotlight';
+    card.insertBefore(spot, card.firstChild);
+
+    card.addEventListener('mousemove', function(e) {
+      var rect = card.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      spot.style.background = 'radial-gradient(380px at ' + x + 'px ' + y + 'px, rgba(45,122,95,0.09), transparent 70%)';
+      spot.style.opacity = '1';
+    });
+    card.addEventListener('mouseleave', function() {
+      spot.style.opacity = '0';
+    });
+  });
+}
+
 // ═══════ INIT ═══════
 loadState();
 renderRegions();
 renderDial();
 updateLogBtn();
+initOnboarding();
+initSpotlight();
+
+// ═══════ PWA — Service Worker ═══════
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
 </script>
 </body>
 </html>

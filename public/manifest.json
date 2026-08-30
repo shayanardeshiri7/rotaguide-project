@@ -1,0 +1,24 @@
+{
+  "name": "RotaGuide — Injection Site Tracker",
+  "short_name": "RotaGuide",
+  "description": "Track insulin injection site rotation to prevent lipohypertrophy",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7F5F2",
+  "theme_color": "#2D7A5F",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='36' fill='%232D7A5F'/%3E%3Ccircle cx='96' cy='96' r='60' fill='none' stroke='white' stroke-width='8'/%3E%3Ccircle cx='96' cy='96' r='20' fill='white'/%3E%3Cline x1='96' y1='36' x2='96' y2='56' stroke='white' stroke-width='8' stroke-linecap='round'/%3E%3Cline x1='96' y1='136' x2='96' y2='156' stroke='white' stroke-width='8' stroke-linecap='round'/%3E%3Cline x1='36' y1='96' x2='56' y2='96' stroke='white' stroke-width='8' stroke-linecap='round'/%3E%3Cline x1='136' y1='96' x2='156' y2='96' stroke='white' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%232D7A5F'/%3E%3Ccircle cx='256' cy='256' r='160' fill='none' stroke='white' stroke-width='20'/%3E%3Ccircle cx='256' cy='256' r='54' fill='white'/%3E%3Cline x1='256' y1='96' x2='256' y2='150' stroke='white' stroke-width='20' stroke-linecap='round'/%3E%3Cline x1='256' y1='362' x2='256' y2='416' stroke='white' stroke-width='20' stroke-linecap='round'/%3E%3Cline x1='96' y1='256' x2='150' y2='256' stroke='white' stroke-width='20' stroke-linecap='round'/%3E%3Cline x1='362' y1='256' x2='416' y2='256' stroke='white' stroke-width='20' stroke-linecap='round'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
