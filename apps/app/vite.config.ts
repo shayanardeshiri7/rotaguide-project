@@ -39,6 +39,10 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Cloud sync is opt-in and needs the network anyway, so its
+        // chunk is fetched on demand rather than bloating the offline
+        // install for the majority who never enable it.
+        globIgnores: ['**/supabase-*.js'],
         // Injection data never leaves the device, so there is nothing to
         // sync in the background and no network route worth caching.
         navigateFallback: 'index.html',
@@ -48,5 +52,15 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        // Stable name so the service worker can exclude this chunk from
+        // the offline precache by pattern.
+        manualChunks(id) {
+          if (id.includes('@supabase')) return 'supabase';
+          return undefined;
+        },
+      },
+    },
   },
 });
