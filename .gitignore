@@ -1,6 +1,38 @@
+# dependencies
 node_modules/
-.firebase/
-.firebaserc
-*.log
+.pnpm-store/
+
+# builds
+dist/
+.next/
+out/
+build/
+.turbo/
+*.tsbuildinfo
+
+# test output
+coverage/
+playwright-report/
+test-results/
+.playwright/
+/apps/app/src/domain/**/*.js
+
+# env — never commit keys
+.env
+.env.*
+!.env.example
+
+# editors / os
 .DS_Store
 Thumbs.db
+*.log
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# vercel
+.vercel
+
+# legacy firebase (removed in v2, kept ignored so stale local state never returns)
+.firebase/
+.firebaserc

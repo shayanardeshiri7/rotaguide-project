@@ -1,0 +1,13 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+allowBuilds:
+  esbuild: set this to true or false
+
+# Vite 6 / Next 15 / React 19 all resolve React from the root.
+# Hoisting these keeps a single copy so hooks don't break across workspaces.
+publicHoistPattern:
+  - "*eslint*"
+  - "*prettier*"
+  - "@types/*"
