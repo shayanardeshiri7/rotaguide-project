@@ -21,10 +21,7 @@ export const RECENCY_HALF_LIFE_DAYS = 14;
 /** Sites older than this contribute nothing — keeps the score bounded. */
 export const RECENCY_HORIZON_DAYS = 90;
 
-export type RecommendationReason =
-  | 'first-injection'
-  | 'unused-zone'
-  | 'furthest-from-recent';
+export type RecommendationReason = 'first-injection' | 'unused-zone' | 'furthest-from-recent';
 
 export interface Recommendation {
   /** 0-indexed zone; display as zone + 1. */
@@ -66,11 +63,7 @@ function weightedRecentSites(
 }
 
 /** Total weighted proximity cost of injecting at `candidate`. Lower is better. */
-function siteCost(
-  candidate: number,
-  sites: readonly WeightedSite[],
-  zoneCount: ZoneCount,
-): number {
+function siteCost(candidate: number, sites: readonly WeightedSite[], zoneCount: ZoneCount): number {
   let cost = 0;
   for (const site of sites) {
     cost += site.weight * proximityPenalty(zoneDistanceMm(candidate, site.zone, zoneCount));

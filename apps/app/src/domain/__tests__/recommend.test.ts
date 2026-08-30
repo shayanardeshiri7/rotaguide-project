@@ -21,9 +21,7 @@ describe('recommendNextZone', () => {
       [0, 3],
       [1, 2],
     ]);
-    expect(recommendNextZone(logs, 'abdomen-L', 12, { now: NOW }).reason).toBe(
-      'first-injection',
-    );
+    expect(recommendNextZone(logs, 'abdomen-L', 12, { now: NOW }).reason).toBe('first-injection');
   });
 
   it('prefers an unused zone over a rested one', () => {
@@ -93,7 +91,10 @@ describe('recommendNextZone', () => {
     fc.assert(
       fc.property(
         arbZoneCount.chain((zc) =>
-          fc.tuple(fc.constant(zc), arbLogs(zc, 30).filter((l) => l.length > 0)),
+          fc.tuple(
+            fc.constant(zc),
+            arbLogs(zc, 30).filter((l) => l.length > 0),
+          ),
         ),
         ([zoneCount, logs]) => {
           for (const region of ['abdomen-L', 'thigh-R', 'arm-L'] as const) {

@@ -96,8 +96,8 @@ export function LogTab({ onLogged }: { onLogged: (message: string) => void }) {
 
       <SpotlightCard title="How to use" className="how-to">
         <p className="muted" style={{ margin: 0 }}>
-          Place the guide, inject through the port matching the highlighted zone, then tap that
-          zone here. The suggestion moves you as far from your recent sites as the guide allows.
+          Place the guide, inject through the port matching the highlighted zone, then tap that zone
+          here. The suggestion moves you as far from your recent sites as the guide allows.
         </p>
       </SpotlightCard>
 

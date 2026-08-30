@@ -91,9 +91,7 @@ describe('LogTab', () => {
   it('logs anyway when the user confirms the warning', async () => {
     const user = userEvent.setup();
     useStore.setState({
-      logs: [
-        { id: 'prev', region: 'abdomen-L', zone: 4, timestamp: new Date().toISOString() },
-      ],
+      logs: [{ id: 'prev', region: 'abdomen-L', zone: 4, timestamp: new Date().toISOString() }],
     });
     render(<LogTab onLogged={vi.fn()} />);
 
@@ -120,9 +118,7 @@ describe('LogTab', () => {
     await user.click(screen.getByRole('button', { name: /log abdomen l, zone 5/i }));
 
     const dialog = await screen.findByRole('dialog');
-    expect(dialog.textContent ?? '').not.toMatch(
-      /\b(ensures?|prevents?|guarantees?)\b/i,
-    );
+    expect(dialog.textContent ?? '').not.toMatch(/\b(ensures?|prevents?|guarantees?)\b/i);
   });
 
   it('switching region clears the pending zone selection', async () => {

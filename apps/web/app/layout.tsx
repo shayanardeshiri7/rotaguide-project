@@ -73,8 +73,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               {PROJECT.course} · {PROJECT.institution} · {PROJECT.term}
             </p>
             <p style={{ marginTop: 'var(--rg-space-3)' }}>
-              Not a medical device. A student engineering prototype, not evaluated by any
-              regulator, and not a source of medical advice.
+              Not a medical device. A student engineering prototype, not evaluated by any regulator,
+              and not a source of medical advice.
             </p>
           </div>
         </footer>

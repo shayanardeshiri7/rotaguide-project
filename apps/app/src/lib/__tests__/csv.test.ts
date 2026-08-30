@@ -60,8 +60,6 @@ describe('buildCsv', () => {
 
 describe('csvFilename', () => {
   it('stamps the current date', () => {
-    expect(csvFilename(new Date('2026-04-10T12:00:00Z'))).toBe(
-      'rotaguide-export-2026-04-10.csv',
-    );
+    expect(csvFilename(new Date('2026-04-10T12:00:00Z'))).toBe('rotaguide-export-2026-04-10.csv');
   });
 });

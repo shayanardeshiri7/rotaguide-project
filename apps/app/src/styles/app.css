@@ -24,7 +24,9 @@ body {
   font-size: var(--rg-text-base);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
-  transition: background var(--rg-transition), color var(--rg-transition);
+  transition:
+    background var(--rg-transition),
+    color var(--rg-transition);
 }
 
 .app {
@@ -51,7 +53,7 @@ body {
 }
 
 .header h1 span {
-  color: var(--rg-accent);
+  color: var(--rg-accent-text);
 }
 
 .header__sub {
@@ -112,7 +114,9 @@ body {
   background: var(--rg-surface);
   color: var(--rg-text);
   cursor: pointer;
-  transition: background var(--rg-transition), border-color var(--rg-transition),
+  transition:
+    background var(--rg-transition),
+    border-color var(--rg-transition),
     transform var(--rg-transition);
 }
 
@@ -201,7 +205,7 @@ body {
 .region-btn[aria-pressed='true'] {
   border-color: var(--rg-accent);
   background: var(--rg-accent-light);
-  color: var(--rg-accent-dark);
+  color: var(--rg-accent-text);
 }
 
 /* ── Dial ── */
@@ -270,7 +274,7 @@ body {
   font-family: var(--rg-font-mono);
   font-size: 22px;
   font-weight: 700;
-  fill: var(--rg-accent);
+  fill: var(--rg-accent-text);
   text-anchor: middle;
 }
 
@@ -282,7 +286,7 @@ body {
   padding: var(--rg-space-3);
   border-radius: var(--rg-radius-sm);
   background: var(--rg-accent-light);
-  color: var(--rg-accent-dark);
+  color: var(--rg-accent-text);
   font-size: var(--rg-text-sm);
   margin-bottom: var(--rg-space-4);
 }
@@ -337,7 +341,7 @@ body {
   font-family: var(--rg-font-mono);
   font-size: var(--rg-text-2xl);
   font-weight: 700;
-  color: var(--rg-accent);
+  color: var(--rg-accent-text);
   line-height: 1.1;
 }
 
@@ -536,7 +540,7 @@ body {
 }
 
 .tab[aria-selected='true'] {
-  color: var(--rg-accent);
+  color: var(--rg-accent-text);
   border-top-color: var(--rg-accent);
 }
 

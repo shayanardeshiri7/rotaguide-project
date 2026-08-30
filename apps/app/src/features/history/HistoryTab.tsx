@@ -35,8 +35,8 @@ export function HistoryTab({ onDeleted }: { onDeleted: (message: string) => void
       </div>
 
       <p className="muted" style={{ marginTop: 0 }}>
-        Rotation is the share of consecutive injections at least 20 mm apart — the spacing the
-        guide was designed around.
+        Rotation is the share of consecutive injections at least 20 mm apart — the spacing the guide
+        was designed around.
       </p>
 
       <SpotlightCard title="Recent injections">

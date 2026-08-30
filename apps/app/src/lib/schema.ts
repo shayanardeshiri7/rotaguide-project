@@ -18,12 +18,7 @@ export const logEntrySchema = z.object({
   }),
 });
 
-export const zoneCountSchema = z.union([
-  z.literal(6),
-  z.literal(8),
-  z.literal(10),
-  z.literal(12),
-]);
+export const zoneCountSchema = z.union([z.literal(6), z.literal(8), z.literal(10), z.literal(12)]);
 
 export const themeSchema = z.enum(['light', 'dark', 'system']);
 

@@ -34,5 +34,22 @@ export default tseslint.config(
       eqeqeq: ['error', 'always', { null: 'ignore' }],
     },
   },
+  {
+    // Build and tooling scripts run under Node, and their console output
+    // is the interface — it is not stray debugging left behind.
+    files: ['**/scripts/**', '**/*.config.{js,mjs,ts}', '**/e2e/**'],
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        __dirname: 'readonly',
+        Buffer: 'readonly',
+      },
+    },
+    rules: {
+      'no-console': 'off',
+      'no-undef': 'off',
+    },
+  },
   prettier,
 );

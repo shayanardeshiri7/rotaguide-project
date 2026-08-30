@@ -7,6 +7,7 @@
 Repeated insulin injections into the same small subcutaneous area cause **lipohypertrophy (LH)** — thickened tissue that interferes with insulin absorption and reduces glycemic predictability.
 
 **Key statistics:**
+
 - Pooled LH prevalence: **38%** in insulin-treated individuals (26 studies, 12,493 participants)
 - Failure to rotate injection sites: pooled odds ratio **≈ 8.85** for LH
 - LH association with unexplained hypoglycemia: pOR ≈ 6.98
@@ -15,24 +16,26 @@ Repeated insulin injections into the same small subcutaneous area cause **lipohy
 
 ## Why Existing Solutions Fail
 
-| Solution Type | Limitation |
-|--------------|-----------|
+| Solution Type                            | Limitation                                                                   |
+| ---------------------------------------- | ---------------------------------------------------------------------------- |
 | Education programs & paper rotation maps | Relies on patient memory and motivation; many still inject in familiar spots |
-| Smartphone apps (mySugr, etc.) | Depend on manual input; patients skip or forget; not optimized for rotation |
-| Smart pen ecosystems (InPen) | Rotation is not primary feature; hardware cost/access barriers |
-| SiteSmart colored pen needles | Limited to one pen needle brand; doesn't cover all sites |
-| Wearable injection guides (patented) | Cumbersome; focuses on placement, not long-term rotation habits |
+| Smartphone apps (mySugr, etc.)           | Depend on manual input; patients skip or forget; not optimized for rotation  |
+| Smart pen ecosystems (InPen)             | Rotation is not primary feature; hardware cost/access barriers               |
+| SiteSmart colored pen needles            | Limited to one pen needle brand; doesn't cover all sites                     |
+| Wearable injection guides (patented)     | Cumbersome; focuses on placement, not long-term rotation habits              |
 
 **Recurring gap:** No low-cost, brand-agnostic system combines immediate body-map guidance at the point of injection with minimal-burden reinforcement.
 
 ## Our Design: Rotational Dial Guide (Concept B)
 
 Three concepts were evaluated:
+
 - **Concept A — Linear sliding guide:** Simple but linear progression doesn't match anatomical rotation patterns
 - **Concept B — Rotational dial guide:** ✅ Selected — radial zone layout matches how users conceptualize rotation "around" an injection site
 - **Concept C — Modular marker system:** Flexible but high cognitive burden; vulnerable to user workarounds
 
 ### Why Concept B Won
+
 - Radial mapping reduces cognitive load and matches anatomical intuition
 - Tactile detent clicks support accessibility for users with reduced vision
 - Each dial position = discrete zone ID → enables single-tap digital logging
@@ -57,26 +60,26 @@ Three concepts were evaluated:
 
 ## Project Risks (Top 5 by RAS Score)
 
-| Risk | RAS | Mitigation |
-|------|-----|-----------|
-| Guide doesn't fit diverse body shapes | 9 | Multiple size variants; early fit checks with foam models |
-| User bypasses or ignores guide | 8 | Physical constraint of injection ports + visual feedback in tracker |
-| Tracker interface too complex | 8 | Minimal inputs (pre-mapped zones, single-tap); early pilot testing |
-| Material hygiene/skin-contact concerns | 7 | PLA + silicone; cleaning protocol; labeled as non-clinical prototype |
-| Scope creep during iteration | 7 | Freeze requirements early; "no new features" after final iteration milestone |
+| Risk                                   | RAS | Mitigation                                                                   |
+| -------------------------------------- | --- | ---------------------------------------------------------------------------- |
+| Guide doesn't fit diverse body shapes  | 9   | Multiple size variants; early fit checks with foam models                    |
+| User bypasses or ignores guide         | 8   | Physical constraint of injection ports + visual feedback in tracker          |
+| Tracker interface too complex          | 8   | Minimal inputs (pre-mapped zones, single-tap); early pilot testing           |
+| Material hygiene/skin-contact concerns | 7   | PLA + silicone; cleaning protocol; labeled as non-clinical prototype         |
+| Scope creep during iteration           | 7   | Freeze requirements early; "no new features" after final iteration milestone |
 
 ## Budget
 
-| Item | Cost (CAD) |
-|------|-----------|
-| Mechanical hardware (springs, screws, fasteners) | $10.00 |
-| Neodymium disc magnets | $17.99 |
-| Silicone sheet (skin-contact interface) | $15.00 |
-| Alcohol wipes | $10.00 |
-| Web app/dashboard hosting (Firebase free tier) | $0.00 |
-| UI prototyping software (Figma free tier) | $0.00 |
-| Contingency | $7.00 |
-| **Total** | **$59.99** |
+| Item                                             | Cost (CAD) |
+| ------------------------------------------------ | ---------- |
+| Mechanical hardware (springs, screws, fasteners) | $10.00     |
+| Neodymium disc magnets                           | $17.99     |
+| Silicone sheet (skin-contact interface)          | $15.00     |
+| Alcohol wipes                                    | $10.00     |
+| Web app/dashboard hosting (Firebase free tier)   | $0.00      |
+| UI prototyping software (Figma free tier)        | $0.00      |
+| Contingency                                      | $7.00      |
+| **Total**                                        | **$59.99** |
 
 ## Timeline Summary
 

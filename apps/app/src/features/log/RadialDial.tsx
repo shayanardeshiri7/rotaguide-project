@@ -54,19 +54,24 @@ export function RadialDial({
     }
     event.preventDefault();
 
+    // Move relative to whatever currently has focus, falling back to the
+    // selection. Focus is the keyboard user's cursor: arrowing away from
+    // a focused zone must step to its neighbour, not select the zone
+    // they are already sitting on.
+    const focused = (event.target as Element | null)?.getAttribute?.('data-zone');
+    const anchor = focused !== null && focused !== undefined ? Number(focused) : selectedZone;
+
     let next: number;
     if (key === 'Home') next = 0;
     else if (key === 'End') next = zoneCount - 1;
     else if (key === 'ArrowRight' || key === 'ArrowDown') {
-      next = selectedZone === null ? 0 : (selectedZone + 1) % zoneCount;
+      next = anchor === null ? 0 : (anchor + 1) % zoneCount;
     } else {
-      next = selectedZone === null ? zoneCount - 1 : (selectedZone - 1 + zoneCount) % zoneCount;
+      next = anchor === null ? zoneCount - 1 : (anchor - 1 + zoneCount) % zoneCount;
     }
 
     onSelect(next);
-    groupRef.current
-      ?.querySelector<SVGPathElement>(`[data-zone="${next}"]`)
-      ?.focus();
+    groupRef.current?.querySelector<SVGPathElement>(`[data-zone="${next}"]`)?.focus();
   }
 
   const recAngle = recommendedZone * step + step / 2 - Math.PI / 2;
@@ -101,13 +106,7 @@ export function RadialDial({
               type="matrix"
               values="1.3 0 0 0 0.06  0 1.3 0 0 0.06  0 0 1.3 0 0.06  0 0 0 1 0"
             />
-            <feDropShadow
-              dx="0"
-              dy="0"
-              stdDeviation="4"
-              floodColor="white"
-              floodOpacity="0.45"
-            />
+            <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="white" floodOpacity="0.45" />
           </filter>
 
           {/* Diagonal hatch marks zones used recently — a second channel

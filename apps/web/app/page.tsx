@@ -60,8 +60,8 @@ export default function Home() {
           </h2>
           <p className="lede">
             Repeated injection into one area thickens the subcutaneous tissue — lipohypertrophy.
-            Insulin absorbs from that tissue slowly and unpredictably, which makes doses harder
-            to reason about.
+            Insulin absorbs from that tissue slowly and unpredictably, which makes doses harder to
+            reason about.
           </p>
 
           <div className="stat-grid">
@@ -140,9 +140,9 @@ export default function Home() {
             The plate says where. The app remembers where you have been.
           </h2>
           <p className="lede">
-            A local-first progressive web app mirroring the plate&apos;s zones. It suggests the
-            site furthest from your recent injections, flags repeats before you log them, and
-            keeps everything on your device.
+            A local-first progressive web app mirroring the plate&apos;s zones. It suggests the site
+            furthest from your recent injections, flags repeats before you log them, and keeps
+            everything on your device.
           </p>
           <div className="cta-row">
             <Link className="button button--primary" href="/app">
@@ -158,8 +158,8 @@ export default function Home() {
           <p className="eyebrow">Validation</p>
           <h2 className="section-title">What we measured — and what we could not.</h2>
           <p className="lede">
-            Five participants, simulated use, three evaluations. Both halves of this section
-            matter equally.
+            Five participants, simulated use, three evaluations. Both halves of this section matter
+            equally.
           </p>
 
           <div className="table-scroll">
@@ -201,8 +201,8 @@ export default function Home() {
                 marginTop: 'var(--rg-space-3)',
               }}
             >
-              Each of these needs bench testing the course had neither the budget nor the
-              timeline for. They are listed rather than omitted.
+              Each of these needs bench testing the course had neither the budget nor the timeline
+              for. They are listed rather than omitted.
             </p>
             <ul className="unverified">
               {UNVERIFIED_SPECS.map((item) => (

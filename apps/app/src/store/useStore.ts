@@ -82,7 +82,8 @@ export const useStore = create<AppState>()(
           // A zone index that no longer exists on a smaller guide would
           // point at nothing; drop the selection rather than clamp it to
           // a different body location.
-          selectedZone: s.selectedZone !== null && s.selectedZone >= zoneCount ? null : s.selectedZone,
+          selectedZone:
+            s.selectedZone !== null && s.selectedZone >= zoneCount ? null : s.selectedZone,
         })),
 
       setThreshold: (threshold) => set({ threshold }),
@@ -142,7 +143,26 @@ export const useStore = create<AppState>()(
           const result = migrateFromV1(window.localStorage);
           if (result.migrated && result.state !== null) {
             const store = useStore.getState();
+
+            // Whether v2 has anything of its own must be decided before
+            // the import lands, not after.
+            const pristine = store.logs.length === 0 && !store.tutorialDone;
+
             store.mergeRemoteLogs(result.state.logs);
+
+            // Carry the user's settings across too, but only onto a
+            // pristine v2 install. A returning v1 user should not be
+            // shown onboarding again or lose the guide size they
+            // configured — and equally, an import must never overwrite
+            // choices they have already made in v2.
+            if (pristine) {
+              useStore.setState({
+                zoneCount: result.state.zoneCount,
+                threshold: result.state.threshold,
+                theme: result.state.theme,
+                tutorialDone: result.state.tutorialDone,
+              });
+            }
 
             const parts = [`Imported ${result.importedEntries} injections from your old app.`];
             if (result.droppedEntries > 0) {

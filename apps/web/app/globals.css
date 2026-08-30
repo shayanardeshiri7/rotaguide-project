@@ -671,3 +671,41 @@ section:first-of-type {
 .skip-link:focus {
   left: 0;
 }
+
+/* ── App screenshots ── */
+.shots {
+  display: grid;
+  gap: var(--rg-space-8);
+  margin-top: var(--rg-space-12);
+}
+
+@media (min-width: 640px) {
+  .shots {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .shots {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.shot {
+  margin: 0;
+}
+
+.shot img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--rg-radius);
+  border: 1px solid var(--rg-border);
+  box-shadow: var(--rg-shadow-lg);
+}
+
+.shot figcaption {
+  margin-top: var(--rg-space-3);
+  font-size: var(--rg-text-xs);
+  color: var(--rg-text-muted);
+}

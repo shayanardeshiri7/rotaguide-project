@@ -2,64 +2,134 @@ import { del, get, set } from 'idb-keyval';
 import type { StateStorage } from 'zustand/middleware';
 
 /**
- * IndexedDB-backed storage for the Zustand persist middleware.
+ * Persistence for the Zustand store.
  *
- * localStorage caps out around 5 MB and blocks the main thread on every
- * write; IndexedDB does neither and survives storage pressure better.
- * A user injecting four times a day for five years is ~7,300 entries,
- * which localStorage would handle — but the synchronous writes on every
- * log would be felt on a low-end phone.
+ * IndexedDB is the main store: localStorage caps out around 5 MB and
+ * blocks the main thread on every write, which a user injecting four
+ * times a day for years would eventually feel on a low-end phone.
  *
- * Falls back to an in-memory map when IndexedDB is unavailable (private
- * browsing, embedded webviews) so the app still runs for the session
- * rather than crashing on launch.
+ * But IndexedDB writes are asynchronous, and that opens a real hole. If
+ * the tab is closed, reloaded, or crashes in the moment between logging
+ * an injection and the transaction committing, the entry is gone. That
+ * is precisely the failure this app must not have — it was reproducible
+ * in an end-to-end test that logged an injection and reloaded
+ * immediately, and the entry was lost every time.
+ *
+ * So every write also goes to localStorage synchronously, before the
+ * IndexedDB write is even started. The mirror is therefore never staler
+ * than IndexedDB, and a reload one millisecond after logging still finds
+ * the entry. A sequence number on each record lets the reader pick the
+ * newer of the two without guessing, which matters when the mirror write
+ * fails on quota and silently stops advancing.
  */
 
-const memoryFallback = new Map<string, string>();
-let useFallback = false;
+const MIRROR_PREFIX = 'rotaguide.mirror.';
+const SEQ_KEY = 'rotaguide.mirror.seq';
+
+interface Record_ {
+  readonly seq: number;
+  readonly value: string;
+}
+
+const memoryFallback = new Map<string, Record_>();
+let idbUnavailable = false;
+
+function nextSeq(): number {
+  try {
+    const current = Number(window.localStorage.getItem(SEQ_KEY) ?? '0');
+    const next = Number.isFinite(current) ? current + 1 : 1;
+    window.localStorage.setItem(SEQ_KEY, String(next));
+    return next;
+  } catch {
+    return Date.now();
+  }
+}
+
+function readMirror(name: string): Record_ | null {
+  try {
+    const raw = window.localStorage.getItem(MIRROR_PREFIX + name);
+    if (raw === null) return null;
+    const parsed = JSON.parse(raw) as Record_;
+    return typeof parsed?.value === 'string' && typeof parsed.seq === 'number' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeMirror(name: string, record: Record_): void {
+  try {
+    window.localStorage.setItem(MIRROR_PREFIX + name, JSON.stringify(record));
+  } catch {
+    // Quota exceeded or storage disabled. IndexedDB remains the store of
+    // record; we simply lose the crash-window protection for this write.
+  }
+}
 
 export const idbStorage: StateStorage = {
   async getItem(name) {
-    if (useFallback) return memoryFallback.get(name) ?? null;
-    try {
-      return (await get<string>(name)) ?? null;
-    } catch {
-      useFallback = true;
-      return memoryFallback.get(name) ?? null;
+    const mirror = readMirror(name);
+
+    let stored: Record_ | null = null;
+    if (idbUnavailable) {
+      stored = memoryFallback.get(name) ?? null;
+    } else {
+      try {
+        stored = (await get<Record_>(name)) ?? null;
+      } catch {
+        idbUnavailable = true;
+        stored = memoryFallback.get(name) ?? null;
+      }
     }
+
+    // Whichever write happened last wins. Normally they match; they
+    // diverge only when a write was interrupted mid-flight.
+    if (stored === null) return mirror?.value ?? null;
+    if (mirror === null) return stored.value;
+    return mirror.seq > stored.seq ? mirror.value : stored.value;
   },
 
   async setItem(name, value) {
-    if (useFallback) {
-      memoryFallback.set(name, value);
+    const record: Record_ = { seq: nextSeq(), value };
+
+    // Synchronous first: this is the write that survives an immediate
+    // reload.
+    writeMirror(name, record);
+
+    if (idbUnavailable) {
+      memoryFallback.set(name, record);
       return;
     }
     try {
-      await set(name, value);
+      await set(name, record);
     } catch {
-      useFallback = true;
-      memoryFallback.set(name, value);
+      idbUnavailable = true;
+      memoryFallback.set(name, record);
     }
   },
 
   async removeItem(name) {
     memoryFallback.delete(name);
-    if (useFallback) return;
+    try {
+      window.localStorage.removeItem(MIRROR_PREFIX + name);
+    } catch {
+      // nothing to do
+    }
+    if (idbUnavailable) return;
     try {
       await del(name);
     } catch {
-      useFallback = true;
+      idbUnavailable = true;
     }
   },
 };
 
-/** True when persistence has degraded to memory-only for this session. */
+/** True when IndexedDB failed and this session is running on the mirror. */
 export function isEphemeral(): boolean {
-  return useFallback;
+  return idbUnavailable;
 }
 
 /** Test seam — resets the fallback latch between cases. */
 export function __resetStorageFallback(): void {
-  useFallback = false;
+  idbUnavailable = false;
   memoryFallback.clear();
 }

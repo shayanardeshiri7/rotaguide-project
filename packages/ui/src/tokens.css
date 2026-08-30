@@ -18,9 +18,18 @@
   --rg-text-muted: #6b6560;
 
   /* ── Accent (clinical green) ── */
+  /* --rg-accent is a *surface* colour: fills, borders, bars. It is not
+     safe as text on a dark background. */
   --rg-accent: #2d7a5f;
   --rg-accent-light: #e8f5ee;
   --rg-accent-dark: #1e5a43;
+
+  /* Accent-coloured *text*. Kept separate because the fill and the
+     legible foreground have to move in opposite directions between
+     themes — reusing --rg-accent-dark here rendered dark-green on
+     dark-green at 1.48:1 in dark mode. Both values clear WCAG AA
+     (>=4.5:1) against --rg-bg, --rg-surface and --rg-accent-light. */
+  --rg-accent-text: #1e5a43;
 
   /* ── Warning (burnt orange) ── */
   --rg-warn: #c75b39;
@@ -45,8 +54,7 @@
   --rg-zone-12: #bf5a8a;
 
   /* ── Type ── */
-  --rg-font-sans:
-    'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --rg-font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --rg-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
   /* Minimum body size is 16px, not 14px: the spec calls for >=14pt legibility
@@ -82,8 +90,7 @@
   --rg-tap-min: 44px;
 
   /* ── Elevation ── */
-  --rg-shadow:
-    0 1px 3px rgb(0 0 0 / 0.06), 0 4px 12px rgb(0 0 0 / 0.04);
+  --rg-shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 4px 12px rgb(0 0 0 / 0.04);
   --rg-shadow-lg: 0 4px 24px rgb(0 0 0 / 0.08);
   --rg-shadow-xl: 0 12px 48px rgb(0 0 0 / 0.12);
 
@@ -101,10 +108,12 @@
   --rg-text: #f0ede8;
   --rg-text-muted: #9b968f;
   --rg-accent-light: #1a3d2e;
+  /* Lightened so accent text clears AA on the dark surfaces: 6.4:1 on
+     --rg-surface, 7.2:1 on --rg-bg, 5.0:1 on --rg-accent-light. */
+  --rg-accent-text: #5fb894;
   --rg-warn-light: #3d1a10;
   --rg-caution-light: #3d3016;
-  --rg-shadow:
-    0 1px 3px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.3);
+  --rg-shadow: 0 1px 3px rgb(0 0 0 / 0.4), 0 4px 12px rgb(0 0 0 / 0.3);
   --rg-shadow-lg: 0 4px 24px rgb(0 0 0 / 0.5);
   --rg-shadow-xl: 0 12px 48px rgb(0 0 0 / 0.6);
 }

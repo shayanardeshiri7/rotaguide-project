@@ -85,11 +85,7 @@ export function SettingsTab({ onToast }: { onToast: (message: string) => void })
             <span className="setting__label">Theme</span>
             <span className="setting__hint">System follows your device setting.</span>
           </label>
-          <select
-            id="theme"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value as Theme)}
-          >
+          <select id="theme" value={theme} onChange={(e) => setTheme(e.target.value as Theme)}>
             <option value="system">System</option>
             <option value="light">Light</option>
             <option value="dark">Dark</option>
@@ -99,8 +95,8 @@ export function SettingsTab({ onToast }: { onToast: (message: string) => void })
 
       <SpotlightCard title="Your data">
         <p className="muted" style={{ marginTop: 0 }}>
-          Your injection history is stored on this device. Nothing is sent anywhere unless you
-          turn on sync below.
+          Your injection history is stored on this device. Nothing is sent anywhere unless you turn
+          on sync below.
         </p>
         <div style={{ display: 'grid', gap: 'var(--rg-space-3)' }}>
           <button type="button" className="btn" onClick={exportCsv}>
@@ -123,9 +119,9 @@ export function SettingsTab({ onToast }: { onToast: (message: string) => void })
       <SyncSettings onToast={onToast} />
 
       <p className="disclaimer">
-        RotaGuide is a student engineering prototype from a university capstone project. It is
-        not a medical device, has not been evaluated by Health Canada, and does not provide
-        medical advice. Talk to your diabetes care team about injection technique.
+        RotaGuide is a student engineering prototype from a university capstone project. It is not a
+        medical device, has not been evaluated by Health Canada, and does not provide medical
+        advice. Talk to your diabetes care team about injection technique.
       </p>
 
       <Modal

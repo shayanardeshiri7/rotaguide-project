@@ -26,10 +26,7 @@ export function sortByTime(logs: readonly LogEntry[]): readonly LogEntry[] {
  * minimum, in [0, 1]. Returns null when there are fewer than two
  * injections — an adherence score needs a pair to score.
  */
-export function calculateAdherence(
-  logs: readonly LogEntry[],
-  zoneCount: ZoneCount,
-): number | null {
+export function calculateAdherence(logs: readonly LogEntry[], zoneCount: ZoneCount): number | null {
   const sorted = sortByTime(logs);
   if (sorted.length < 2) return null;
 
@@ -43,10 +40,7 @@ export function calculateAdherence(
 }
 
 /** Adherence as a whole percentage, or null when unscoreable. */
-export function adherencePercent(
-  logs: readonly LogEntry[],
-  zoneCount: ZoneCount,
-): number | null {
+export function adherencePercent(logs: readonly LogEntry[], zoneCount: ZoneCount): number | null {
   const score = calculateAdherence(logs, zoneCount);
   return score === null ? null : Math.round(score * 100);
 }

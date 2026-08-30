@@ -72,11 +72,7 @@ interface LastUse {
 }
 
 /** Most recent use of `zone` in this region, or null if never used. */
-function findLastUse(
-  regionLogs: readonly LogEntry[],
-  zone: number,
-  nowMs: number,
-): LastUse | null {
+function findLastUse(regionLogs: readonly LogEntry[], zone: number, nowMs: number): LastUse | null {
   let bestMs: number | null = null;
   let bestTimestamp = '';
 

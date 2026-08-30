@@ -94,14 +94,9 @@ describe('detectRepeatRisk', () => {
         ),
         fc.integer({ min: 0, max: 10 }),
         ([zoneCount, logs, zone], threshold) => {
-          const risk = detectRepeatRisk(
-            logs,
-            'abdomen-L',
-            zone,
-            zoneCount,
-            threshold,
-            { now: NOW },
-          );
+          const risk = detectRepeatRisk(logs, 'abdomen-L', zone, zoneCount, threshold, {
+            now: NOW,
+          });
           expect(risk.reason).not.toMatch(banned);
         },
       ),

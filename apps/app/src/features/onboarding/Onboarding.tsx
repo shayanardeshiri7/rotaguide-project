@@ -44,12 +44,7 @@ export function Onboarding() {
   if (!current) return null;
 
   return (
-    <div
-      className="onboard"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="onboardTitle"
-    >
+    <div className="onboard" role="dialog" aria-modal="true" aria-labelledby="onboardTitle">
       <div className="onboard__card">
         <div className="onboard__dots" aria-hidden="true">
           {STEPS.map((s, i) => (
@@ -76,12 +71,7 @@ export function Onboarding() {
         </p>
 
         <div style={{ display: 'flex', gap: 'var(--rg-space-3)' }}>
-          <button
-            type="button"
-            className="btn"
-            style={{ flex: 1 }}
-            onClick={completeTutorial}
-          >
+          <button type="button" className="btn" style={{ flex: 1 }} onClick={completeTutorial}>
             Skip
           </button>
           <button

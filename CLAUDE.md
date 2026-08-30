@@ -15,19 +15,19 @@ The clinical target is **lipohypertrophy**: 38% pooled prevalence in insulin-tre
 
 Earlier versions of this file and the README described things that the final report does not support. If you find these claims anywhere, they are wrong:
 
-| Wrong | Correct |
-|---|---|
-| "Rotational dial guide with a detent mechanism, neodymium magnets, spring-loaded ball bearing" | A **flat plate** with circular ports. No dial, no detent, no magnets. The *app* uses a radial dial — that is a UI metaphor and it stays. |
-| "~$75 CAD device / budget ≤$100" | Actual spend was **$17** against a $100 ceiling. |
-| Team of five listed by name | Credit by **role only**. Do not add individual names to public copy. |
-| "All nine specs verified" | **Four of nine** verified. The other five are "cannot determine" and must be listed, not hidden. |
+| Wrong                                                                                          | Correct                                                                                                                                  |
+| ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| "Rotational dial guide with a detent mechanism, neodymium magnets, spring-loaded ball bearing" | A **flat plate** with circular ports. No dial, no detent, no magnets. The _app_ uses a radial dial — that is a UI metaphor and it stays. |
+| "~$75 CAD device / budget ≤$100"                                                               | Actual spend was **$17** against a $100 ceiling.                                                                                         |
+| Team of five listed by name                                                                    | Credit by **role only**. Do not add individual names to public copy.                                                                     |
+| "All nine specs verified"                                                                      | **Four of nine** verified. The other five are "cannot determine" and must be listed, not hidden.                                         |
 
 ## Non-negotiable constraints
 
 These come from the project's own ethics analysis and FMEA. They are not style preferences.
 
 1. **Not a medical device.** Say so on any public surface. Would likely be Health Canada Class II if commercialised.
-2. **No false reassurance.** Ethical Failure #1 is the device creating false confidence. The words *ensures, prevents, guarantees, eliminates, cures, clinically proven* are banned from user-facing copy. There is a test asserting this — see `apps/web/content/project.ts` (`BANNED_CLAIMS`) and the copy tests.
+2. **No false reassurance.** Ethical Failure #1 is the device creating false confidence. The words _ensures, prevents, guarantees, eliminates, cures, clinically proven_ are banned from user-facing copy. There is a test asserting this — see `apps/web/content/project.ts` (`BANNED_CLAIMS`) and the copy tests.
 3. **Privacy first.** Never transmit injection data off-device without explicit consent. Sync is opt-in, off by default, behind a consent screen that names the exact fields sent.
 4. **Accessibility is a requirement.** Users include older adults with reduced vision, neuropathy, arthritis. ≥44 px targets, WCAG 2.2 AA, keyboard-complete, colour never the only channel.
 
@@ -77,14 +77,14 @@ pnpm lint typecheck build
 
 Use these exact figures; they trace to the final report. n = 5, simulated use.
 
-| Metric | Spec | Result |
-|---|---|---|
-| Logging time | ≤ 15 s | 11.4 s median |
+| Metric             | Spec    | Result                        |
+| ------------------ | ------- | ----------------------------- |
+| Logging time       | ≤ 15 s  | 11.4 s median                 |
 | Placement accuracy | ≤ ±5 mm | 2.6 mm avg, 100% in tolerance |
-| Comfort | ≥ 4/5 | 4.0 / 5 |
-| Ease of use | — | 4.4 / 5 |
-| Rotation clarity | — | 4.8 / 5 |
-| App usability | — | 4.4 / 5 |
+| Comfort            | ≥ 4/5   | 4.0 / 5                       |
+| Ease of use        | —       | 4.4 / 5                       |
+| Rotation clarity   | —       | 4.8 / 5                       |
+| App usability      | —       | 4.4 / 5                       |
 
 Unverified: ISO 10993 biocompatibility, ≥500-use durability, alcohol-wipe tolerance, ±10 mm tracking resolution, ≥14 pt readability.
 
@@ -94,4 +94,4 @@ FMEA top risks, RPN before → after: wrong-port injection 252→96; false confi
 
 - Plain language, roughly grade-6 reading level — users include older adults.
 - One-handed phone use during an injection routine. Max width 480px.
-- Say what is known and what is not. The honesty *is* the credibility here.
+- Say what is known and what is not. The honesty _is_ the credibility here.

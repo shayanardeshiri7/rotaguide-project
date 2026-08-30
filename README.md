@@ -16,7 +16,7 @@ BMEN 668 capstone · University of Calgary · Feb–Apr 2026
 
 The strongest modifiable cause is failing to rotate injection sites: a pooled **odds ratio of ≈8.85**.
 
-Existing approaches all leave a gap. Education depends on recall at the moment of injection. Logging apps record only what you tell them. Smart pens are brand-locked and expensive. Paper charts are static. None of them connect *where the needle actually goes* to *what should come next*.
+Existing approaches all leave a gap. Education depends on recall at the moment of injection. Logging apps record only what you tell them. Smart pens are brand-locked and expensive. Paper charts are static. None of them connect _where the needle actually goes_ to _what should come next_.
 
 ## The system
 
@@ -30,12 +30,12 @@ Existing approaches all leave a gap. Education depends on recall at the moment o
 
 n = 5, simulated use.
 
-| Metric | Spec | Result |
-|---|---|---|
-| Logging time per injection | ≤ 15 s | **11.4 s** median |
-| Guide placement accuracy | ≤ ±5 mm | **2.6 mm** average, 100% within tolerance |
-| Comfort | ≥ 4 / 5 | 4.0 / 5 |
-| Rotation clarity | — | 4.8 / 5 |
+| Metric                     | Spec    | Result                                    |
+| -------------------------- | ------- | ----------------------------------------- |
+| Logging time per injection | ≤ 15 s  | **11.4 s** median                         |
+| Guide placement accuracy   | ≤ ±5 mm | **2.6 mm** average, 100% within tolerance |
+| Comfort                    | ≥ 4 / 5 | 4.0 / 5                                   |
+| Rotation clarity           | —       | 4.8 / 5                                   |
 
 **And what we did not.** Four of nine technical specifications were verified. The other five — biocompatibility (ISO 10993), ≥500-use durability, alcohol-wipe tolerance, ±10 mm tracking resolution, and ≥14 pt readability — could not be determined within the course budget and timeline. Testing was simulated: the guide was never placed on skin and no insulin was injected. One older participant found the rigid plate uncomfortable on the abdomen.
 
@@ -60,7 +60,7 @@ docs/           Architecture, engineering notes, decision records
 
 The part worth reading is `apps/app/src/domain`. It is framework-free by contract — ESLint fails the build if anything in it imports React or touches a browser global — and it is where v2 differs most from v1:
 
-- **`recommend.ts`** — v1 suggested the least-recently-used zone *by index*, which would send you from port 1 to port 2: the closest legal choice available. v2 scores each port by its distance from your recent sites, weighted by recency, and suggests the one furthest away.
+- **`recommend.ts`** — v1 suggested the least-recently-used zone _by index_, which would send you from port 1 to port 2: the closest legal choice available. v2 scores each port by its distance from your recent sites, weighted by recency, and suggests the one furthest away.
 - **`adherence.ts`** — v1 counted a pair as adherent whenever the zone index differed. v2 measures the real separation in the plate geometry against the ≥20 mm spec.
 - **`repeat.ts`** — returns a typed `none | caution | warning` state instead of a boolean, so one repeat does not read the same as a pattern.
 - **`zones.ts`** — models the physical plate (4 × 3 ports, 30 mm pitch). Distance means body distance.

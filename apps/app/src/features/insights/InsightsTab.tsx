@@ -79,7 +79,7 @@ export function InsightsTab() {
               aria-pressed={windowDays === n}
               style={
                 windowDays === n
-                  ? { borderColor: 'var(--rg-accent)', color: 'var(--rg-accent-dark)' }
+                  ? { borderColor: 'var(--rg-accent)', color: 'var(--rg-accent-text)' }
                   : undefined
               }
               onClick={() => setWindowDays(n)}
@@ -124,7 +124,7 @@ export function InsightsTab() {
 
       <SpotlightCard title="Repeat-site notices">
         {alerts.length === 0 ? (
-          <p className="muted" style={{ margin: 0, color: 'var(--rg-accent)' }}>
+          <p className="muted" style={{ margin: 0, color: 'var(--rg-accent-text)' }}>
             No repeat-site patterns in your recent injections.
           </p>
         ) : (
@@ -133,8 +133,8 @@ export function InsightsTab() {
               <strong>
                 {regionLabel(alert.region)} zone {alert.zone + 1}
               </strong>{' '}
-              — used {alert.count} times in your last {alert.windowSize} injections. Spacing
-              sites out is associated with lower lipohypertrophy risk.
+              — used {alert.count} times in your last {alert.windowSize} injections. Spacing sites
+              out is associated with lower lipohypertrophy risk.
             </div>
           ))
         )}

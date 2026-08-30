@@ -1,0 +1,127 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  quality:
+    name: Lint, typecheck, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      # The domain layer is pure, so its coverage thresholds (100% of
+      # statements, branches, functions and lines) are enforced here, not
+      # merely reported.
+      - name: Unit and component tests with coverage
+        run: pnpm test:coverage
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v5
+        continue-on-error: true
+        with:
+          files: apps/app/coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  build:
+    name: Build both apps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      - name: Upload site
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-out
+          path: apps/web/out
+          retention-days: 7
+
+  e2e:
+    name: End-to-end and accessibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @rotaguide/app exec playwright install --with-deps chromium webkit
+
+      - name: Build the tracker
+        run: pnpm --filter @rotaguide/app build
+
+      # Covers the first-run flow, logging, persistence across reload,
+      # CSV export, and axe-core with zero critical or serious
+      # violations on every route in both themes.
+      - name: Run Playwright
+        run: pnpm --filter @rotaguide/app e2e
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: apps/app/playwright-report
+          retention-days: 7
+
+  lighthouse:
+    name: Lighthouse (landing page)
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @rotaguide/web build
+
+      - name: Audit
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          configPath: ./.lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: true

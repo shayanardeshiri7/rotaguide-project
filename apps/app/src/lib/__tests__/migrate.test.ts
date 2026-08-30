@@ -1,10 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import {
-  MIGRATION_FLAG,
-  V1_LEGACY_KEY,
-  V1_STORAGE_KEY,
-  migrateFromV1,
-} from '../migrate';
+import { MIGRATION_FLAG, V1_LEGACY_KEY, V1_STORAGE_KEY, migrateFromV1 } from '../migrate';
 
 /**
  * Migration is the highest-stakes code in the app: silently losing a
@@ -138,9 +133,7 @@ describe('migrateFromV1', () => {
     storage.setItem(
       V1_LEGACY_KEY,
       JSON.stringify({
-        logs: [
-          { id: 'old', region: 'thigh-L', zone: 2, timestamp: '2026-03-01T08:00:00.000Z' },
-        ],
+        logs: [{ id: 'old', region: 'thigh-L', zone: 2, timestamp: '2026-03-01T08:00:00.000Z' }],
       }),
     );
     const result = migrateFromV1(storage);
@@ -189,5 +182,26 @@ describe('migrateFromV1', () => {
     const result = migrateFromV1(failing);
     expect(result.migrated).toBe(true);
     expect(result.importedEntries).toBe(2);
+  });
+});
+
+describe('settings carried across from v1', () => {
+  it('preserves guide size, threshold and tutorial state', () => {
+    // A returning user should not be shown onboarding again, and should
+    // not silently get a different guide size than the plate they own.
+    storage.setItem(V1_STORAGE_KEY, v1Payload({ zoneCount: 8, threshold: 3, tutorialDone: true }));
+    const result = migrateFromV1(storage);
+    expect(result.state?.zoneCount).toBe(8);
+    expect(result.state?.threshold).toBe(3);
+    expect(result.state?.tutorialDone).toBe(true);
+  });
+
+  it('falls back to defaults when v1 held nonsense settings', () => {
+    storage.setItem(V1_STORAGE_KEY, v1Payload({ zoneCount: 7, threshold: -4 }));
+    const result = migrateFromV1(storage);
+    // 7 is not a guide size that exists; the whole document fails
+    // validation rather than inventing a plausible-looking value.
+    expect(result.state?.zoneCount).toBe(12);
+    expect(result.state?.threshold).toBe(5);
   });
 });

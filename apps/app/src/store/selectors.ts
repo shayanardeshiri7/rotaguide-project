@@ -24,10 +24,7 @@ export function useRecommendation() {
   const logs = useStore((s) => s.logs);
   const region = useStore((s) => s.selectedRegion);
   const zoneCount = useStore((s) => s.zoneCount);
-  return useMemo(
-    () => recommendNextZone(logs, region, zoneCount),
-    [logs, region, zoneCount],
-  );
+  return useMemo(() => recommendNextZone(logs, region, zoneCount), [logs, region, zoneCount]);
 }
 
 export function useRepeatRisk(zone: number | null) {
@@ -36,10 +33,7 @@ export function useRepeatRisk(zone: number | null) {
   const zoneCount = useStore((s) => s.zoneCount);
   const threshold = useStore((s) => s.threshold);
   return useMemo(
-    () =>
-      zone === null
-        ? null
-        : detectRepeatRisk(logs, region, zone, zoneCount, threshold),
+    () => (zone === null ? null : detectRepeatRisk(logs, region, zone, zoneCount, threshold)),
     [logs, region, zone, zoneCount, threshold],
   );
 }
@@ -48,10 +42,7 @@ export function useZoneUsage() {
   const logs = useStore((s) => s.logs);
   const region = useStore((s) => s.selectedRegion);
   const zoneCount = useStore((s) => s.zoneCount);
-  return useMemo(
-    () => zoneUsageCounts(logs, region, zoneCount),
-    [logs, region, zoneCount],
-  );
+  return useMemo(() => zoneUsageCounts(logs, region, zoneCount), [logs, region, zoneCount]);
 }
 
 export function useHistoryStats() {

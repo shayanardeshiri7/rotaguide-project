@@ -19,8 +19,7 @@ export default defineConfig({
       manifest: {
         name: 'RotaGuide — Injection Site Tracker',
         short_name: 'RotaGuide',
-        description:
-          'Track insulin injection-site rotation. All data stays on your device.',
+        description: 'Track insulin injection-site rotation. All data stays on your device.',
         theme_color: '#2D7A5F',
         background_color: '#F7F5F2',
         display: 'standalone',

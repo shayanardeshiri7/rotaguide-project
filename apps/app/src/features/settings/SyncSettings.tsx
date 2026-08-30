@@ -33,9 +33,7 @@ export function SyncSettings({ onToast }: { onToast: (message: string) => void }
       <div className="setting">
         <label htmlFor="syncToggle">
           <span className="setting__label">Back up to the cloud</span>
-          <span className="setting__hint">
-            Off by default. The app works fully without this.
-          </span>
+          <span className="setting__hint">Off by default. The app works fully without this.</span>
         </label>
         <input
           id="syncToggle"
@@ -91,7 +89,9 @@ export function SyncSettings({ onToast }: { onToast: (message: string) => void }
               </p>
             </form>
           ) : (
-            <div style={{ display: 'grid', gap: 'var(--rg-space-3)', marginTop: 'var(--rg-space-3)' }}>
+            <div
+              style={{ display: 'grid', gap: 'var(--rg-space-3)', marginTop: 'var(--rg-space-3)' }}
+            >
               <p className="muted" style={{ margin: 0 }}>
                 Signed in as {session.user.email}.{' '}
                 {sync.lastSyncedAt === null
@@ -134,11 +134,11 @@ export function SyncSettings({ onToast }: { onToast: (message: string) => void }
         }}
         onCancel={() => setConsenting(false)}
       >
-        Turning this on copies your injection records to a server so you can restore them on
-        another device. What gets sent: the body region, the zone number, and the date and time
-        of each injection. What never gets sent: your name, date of birth, glucose readings,
-        insulin doses, or anything you have not logged in this app. You can turn it off or delete
-        the cloud copy at any time, and your on-device history stays either way.
+        Turning this on copies your injection records to a server so you can restore them on another
+        device. What gets sent: the body region, the zone number, and the date and time of each
+        injection. What never gets sent: your name, date of birth, glucose readings, insulin doses,
+        or anything you have not logged in this app. You can turn it off or delete the cloud copy at
+        any time, and your on-device history stays either way.
       </Modal>
 
       <Modal
@@ -153,8 +153,8 @@ export function SyncSettings({ onToast }: { onToast: (message: string) => void }
         }}
         onCancel={() => setDeleting(false)}
       >
-        This removes every injection record stored on the server and signs you out. The history
-        on this device is not affected. This cannot be undone.
+        This removes every injection record stored on the server and signs you out. The history on
+        this device is not affected. This cannot be undone.
       </Modal>
     </SpotlightCard>
   );
