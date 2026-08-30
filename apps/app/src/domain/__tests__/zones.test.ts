@@ -121,10 +121,10 @@ describe('separationMm', () => {
 });
 
 describe('plateFootprintMm', () => {
-  it('matches the as-built V1 plate footprint within manufacturing margin', () => {
+  it('matches the as-built V1 plate footprint', () => {
     // Report gives ~12 cm x 8 cm for the 12-zone V1 plate.
     const { width, height } = plateFootprintMm(12);
-    expect(width).toBe(110);
+    expect(width).toBe(120);
     expect(height).toBe(80);
   });
 

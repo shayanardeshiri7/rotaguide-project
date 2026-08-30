@@ -94,14 +94,21 @@ export function meetsSpacing(a: LogEntry, b: LogEntry, zoneCount: ZoneCount): bo
   return separationMm(a, b, zoneCount) >= MIN_SPACING_MM;
 }
 
+/**
+ * Material left beyond the outermost port centres, per edge (mm).
+ * Wider on the left and right because the port numerals are embossed
+ * beside the holes, not above them. These are the values that reproduce
+ * the as-built ~12 x 8 cm V1 footprint.
+ */
+export const PLATE_MARGIN_X_MM = 15;
+export const PLATE_MARGIN_Y_MM = 10;
+
 /** Plate footprint (width x height, mm) for a given zone count. */
 export function plateFootprintMm(zoneCount: ZoneCount): { width: number; height: number } {
   const { cols, rows } = GRID_LAYOUTS[zoneCount];
-  // One port radius of material beyond the outermost port centres, each side.
-  const margin = PORT_DIAMETER_MM;
   return {
-    width: (cols - 1) * PORT_PITCH_MM + margin * 2,
-    height: (rows - 1) * PORT_PITCH_MM + margin * 2,
+    width: (cols - 1) * PORT_PITCH_MM + PLATE_MARGIN_X_MM * 2,
+    height: (rows - 1) * PORT_PITCH_MM + PLATE_MARGIN_Y_MM * 2,
   };
 }
 
