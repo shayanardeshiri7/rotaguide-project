@@ -66,7 +66,7 @@ jobs:
       - run: pnpm build
 
       - name: Upload site
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: web-out
           path: apps/web/out
@@ -97,7 +97,7 @@ jobs:
       - name: Run Playwright
         run: pnpm --filter @rotaguide/app e2e
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: playwright-report
